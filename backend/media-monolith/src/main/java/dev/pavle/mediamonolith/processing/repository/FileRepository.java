@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.springframework.stereotype.Repository;
 
@@ -25,7 +26,7 @@ public class FileRepository {
   public Path createTemp(InputStream inputStream, String fileName) {
     Path tmpPath = rootStoragePath.resolve(TMP_PREFIX).resolve(fileName);
     try {
-      Files.copy(inputStream, tmpPath);
+      Files.copy(inputStream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
     } catch (IOException e) {
       throw new FileStorageException("Failed to write temp file: " + fileName, e);
     }
