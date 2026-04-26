@@ -1,14 +1,12 @@
 package dev.pavle.mediamonolith.processing.repository;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.web.multipart.MultipartFile;
 
 import dev.pavle.mediamonolith.config.StorageProperties;
 import dev.pavle.mediamonolith.processing.exceptions.FileStorageException;
@@ -24,18 +22,31 @@ public class FileRepository {
     createFileRepositories(rootStoragePath);
   }
 
-  public Path createTempFile(MultipartFile file) {
-    String tmpFileName =
-        Optional.ofNullable(file.getOriginalFilename())
-            .filter(name -> !name.isBlank())
-            .orElse(UUID.randomUUID().toString());
-    Path tmpPath = rootStoragePath.resolve(TMP_PREFIX).resolve(tmpFileName);
+  public Path createTemp(InputStream inputStream, String fileName) {
+    Path tmpPath = rootStoragePath.resolve(TMP_PREFIX).resolve(fileName);
     try {
-      file.transferTo(tmpPath);
+      Files.copy(inputStream, tmpPath);
     } catch (IOException e) {
-      throw new FileStorageException("Failed to write temp file: " + tmpFileName, e);
+      throw new FileStorageException("Failed to write temp file: " + fileName, e);
     }
     return tmpPath;
+  }
+
+  public Path persist(Path tmpPath, String fileName) {
+    Path target = rootStoragePath.resolve(STORAGE_PREFIX).resolve(fileName);
+    try {
+      return Files.move(tmpPath, target);
+    } catch (IOException e) {
+      throw new FileStorageException("Failed to persist file: " + fileName, e);
+    }
+  }
+
+  public void delete(Path path) {
+    try {
+      Files.deleteIfExists(path);
+    } catch (IOException e) {
+      throw new FileStorageException("Failed to delete file: " + path, e);
+    }
   }
 
   private void createFileRepositories(final Path rootStoragePath) throws IOException {
