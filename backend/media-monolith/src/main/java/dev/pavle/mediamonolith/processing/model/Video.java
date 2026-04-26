@@ -1,6 +1,6 @@
-package dev.pavle.mediamonolith.processing;
+package dev.pavle.mediamonolith.processing.model;
 
-import common.models.BaseEntity;
+import common.model.BaseEntity;
 
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
@@ -13,6 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Video extends BaseEntity {
+  public static final int FILE_NAME_MAX_LEN = 100;
 
   public Video(String fileName, String filePath) {
     this.fileName = fileName;
