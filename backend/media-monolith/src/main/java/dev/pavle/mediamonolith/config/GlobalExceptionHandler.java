@@ -13,14 +13,16 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(VideoProcessingException.class)
   public ProblemDetail handleVideoProcessingException(VideoProcessingException ex) {
-    ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
+    ProblemDetail problem =
+        ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
     problem.setTitle("Video Processing Failed");
     return problem;
   }
 
   @ExceptionHandler(FileStorageException.class)
   public ProblemDetail handleFileStorageException(FileStorageException ex) {
-    ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    ProblemDetail problem =
+        ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     problem.setTitle("File Storage Failed");
     return problem;
   }
