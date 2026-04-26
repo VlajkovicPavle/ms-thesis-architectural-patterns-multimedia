@@ -1,0 +1,12 @@
+package dev.pavle.mediamonolith.processing.exceptions;
+
+public class VideoProcessingException extends RuntimeException {
+
+  public VideoProcessingException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+  public VideoProcessingException(String message) {
+    super(message);
+  }
+}
