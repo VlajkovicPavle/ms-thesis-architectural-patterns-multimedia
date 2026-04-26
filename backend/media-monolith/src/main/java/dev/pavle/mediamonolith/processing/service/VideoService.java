@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,6 +12,7 @@ import dev.pavle.mediamonolith.processing.repository.FileRepository;
 import dev.pavle.mediamonolith.processing.repository.VideoRepository;
 
 @Service
+@Slf4j
 public class VideoService {
 
   private final FileRepository fileRepository;
@@ -30,6 +32,7 @@ public class VideoService {
             .filter(name -> !name.isBlank())
             .orElse(UUID.randomUUID().toString());
     var tmpPath = fileRepository.createTemp(file.getInputStream(), tmpFileName);
-    processingService.extractMetadata(tmpPath);
+    var metadata = processingService.extractMetadata(tmpPath);
+    log.info("Metadata: {}", metadata);
   }
 }
