@@ -7,12 +7,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import dev.pavle.mediamonolith.config.StorageProperties;
 import dev.pavle.mediamonolith.processing.exceptions.FileStorageException;
 
 @Repository
+@Slf4j
 public class FileRepository {
   private static final String TMP_PREFIX = "tmp";
   private static final String STORAGE_PREFIX = "storage";
@@ -27,6 +29,8 @@ public class FileRepository {
     Path tmpPath = rootStoragePath.resolve(TMP_PREFIX).resolve(fileName);
     try {
       Files.copy(inputStream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
+      log.info("Temp file created: path={}",tmpPath);
+
     } catch (IOException e) {
       throw new FileStorageException("Failed to write temp file: " + fileName, e);
     }
