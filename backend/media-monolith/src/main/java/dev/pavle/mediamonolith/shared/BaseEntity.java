@@ -1,4 +1,4 @@
-package common.model;
+package dev.pavle.mediamonolith.shared;
 
 import java.time.Instant;
 import java.util.UUID;

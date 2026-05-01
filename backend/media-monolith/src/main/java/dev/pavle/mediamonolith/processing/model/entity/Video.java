@@ -1,6 +1,6 @@
 package dev.pavle.mediamonolith.processing.model.entity;
 
-import common.model.BaseEntity;
+import dev.pavle.mediamonolith.shared.BaseEntity;
 
 import dev.pavle.mediamonolith.processing.model.vo.VideoMetadata;
 import jakarta.persistence.Embedded;
