@@ -3,21 +3,21 @@ package dev.pavle.mediamonolith.video.infrastructure.processing;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import dev.pavle.mediamonolith.video.domain.port.ProcessingPort;
 import org.springframework.stereotype.Service;
 
 import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
+import dev.pavle.mediamonolith.video.domain.port.ProcessingPort;
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
-public class ProcessingService  implements ProcessingPort {
+public class ProcessingAdapter implements ProcessingPort {
 
   private final ObjectMapper objectMapper;
   private final FfprobeParser ffprobeParser;
 
-  public ProcessingService(ObjectMapper objectMapper, FfprobeParser ffprobeParser) {
+  public ProcessingAdapter(ObjectMapper objectMapper, FfprobeParser ffprobeParser) {
     this.objectMapper = objectMapper;
     this.ffprobeParser = ffprobeParser;
   }

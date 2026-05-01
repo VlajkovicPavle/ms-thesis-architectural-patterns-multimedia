@@ -1,9 +1,9 @@
 package dev.pavle.mediamonolith.video.domain.port;
 
-import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
-
 import java.nio.file.Path;
 
+import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
+
 public interface ProcessingPort {
-    VideoMetadata extractMetadata(Path filePath);
+  VideoMetadata extractMetadata(Path filePath);
 }

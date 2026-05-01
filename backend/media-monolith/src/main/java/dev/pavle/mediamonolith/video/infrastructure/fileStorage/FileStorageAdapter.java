@@ -7,20 +7,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import dev.pavle.mediamonolith.video.domain.port.FileStoragePort;
 import org.springframework.stereotype.Repository;
 
 import dev.pavle.mediamonolith.config.StorageProperties;
+import dev.pavle.mediamonolith.video.domain.port.FileStoragePort;
 import lombok.extern.slf4j.Slf4j;
 
 @Repository
 @Slf4j
-public class FileRepository implements FileStoragePort {
+public class FileStorageAdapter implements FileStoragePort {
   private static final String TMP_PREFIX = "tmp";
   private static final String STORAGE_PREFIX = "storage";
   private final Path rootStoragePath;
 
-  FileRepository(StorageProperties storageProperties) throws IOException {
+  FileStorageAdapter(StorageProperties storageProperties) throws IOException {
     this.rootStoragePath = Paths.get(storageProperties.path());
     createFileRepositories(rootStoragePath);
   }
