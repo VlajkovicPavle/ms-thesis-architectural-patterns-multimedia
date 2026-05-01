@@ -1,4 +1,4 @@
-package dev.pavle.mediamonolith.processing.controller;
+package dev.pavle.mediamonolith.video.infrastructure.web;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import dev.pavle.mediamonolith.processing.service.VideoService;
+import dev.pavle.mediamonolith.video.application.VideoService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController

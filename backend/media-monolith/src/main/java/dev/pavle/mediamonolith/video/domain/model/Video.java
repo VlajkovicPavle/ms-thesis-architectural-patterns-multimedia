@@ -1,8 +1,7 @@
-package dev.pavle.mediamonolith.processing.model.entity;
+package dev.pavle.mediamonolith.video.domain.model;
 
 import dev.pavle.mediamonolith.shared.BaseEntity;
 
-import dev.pavle.mediamonolith.processing.model.vo.VideoMetadata;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import lombok.*;

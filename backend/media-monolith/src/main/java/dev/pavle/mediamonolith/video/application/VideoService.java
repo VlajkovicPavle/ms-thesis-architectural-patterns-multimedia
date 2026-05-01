@@ -1,17 +1,18 @@
-package dev.pavle.mediamonolith.processing.service;
+package dev.pavle.mediamonolith.video.application;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 
+import dev.pavle.mediamonolith.video.infrastructure.processing.ProcessingService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import dev.pavle.mediamonolith.processing.model.entity.Video;
-import dev.pavle.mediamonolith.processing.model.vo.VideoMetadata;
-import dev.pavle.mediamonolith.processing.repository.FileRepository;
-import dev.pavle.mediamonolith.processing.repository.VideoRepository;
+import dev.pavle.mediamonolith.video.domain.model.Video;
+import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
+import dev.pavle.mediamonolith.video.infrastructure.storage.FileRepository;
+import dev.pavle.mediamonolith.video.infrastructure.persistence.VideoRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Service

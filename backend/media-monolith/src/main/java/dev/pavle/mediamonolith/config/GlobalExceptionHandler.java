@@ -5,8 +5,8 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import dev.pavle.mediamonolith.processing.exception.FileStorageException;
-import dev.pavle.mediamonolith.processing.exception.VideoProcessingException;
+import dev.pavle.mediamonolith.video.infrastructure.storage.FileStorageException;
+import dev.pavle.mediamonolith.video.infrastructure.processing.VideoProcessingException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

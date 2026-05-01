@@ -1,4 +1,9 @@
-package dev.pavle.mediamonolith.processing.model.vo;
+package dev.pavle.mediamonolith.Smartstone Companion x3
+Smartstone Aura x6
+TransmogPlus (grey/white items)
+TransmogPlus (legendary items)
+Portable Transmog
+...and much more...video.domain.model;
 
 public final class VideoConstraints {
   public static final int MIN_VIDEO_WIDTH = 144;

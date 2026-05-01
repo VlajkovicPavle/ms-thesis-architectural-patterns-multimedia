@@ -1,9 +1,9 @@
-package dev.pavle.mediamonolith.processing.repository;
+package dev.pavle.mediamonolith.video.infrastructure.persistence;
 
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import dev.pavle.mediamonolith.processing.model.entity.Video;
+import dev.pavle.mediamonolith.video.domain.model.Video;
 
 public interface VideoRepository extends JpaRepository<Video, UUID> {}

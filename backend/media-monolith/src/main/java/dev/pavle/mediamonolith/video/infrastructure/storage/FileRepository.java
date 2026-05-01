@@ -1,4 +1,4 @@
-package dev.pavle.mediamonolith.processing.repository;
+package dev.pavle.mediamonolith.video.infrastructure.storage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +10,6 @@ import java.nio.file.StandardCopyOption;
 import org.springframework.stereotype.Repository;
 
 import dev.pavle.mediamonolith.config.StorageProperties;
-import dev.pavle.mediamonolith.processing.exception.FileStorageException;
 import lombok.extern.slf4j.Slf4j;
 
 @Repository

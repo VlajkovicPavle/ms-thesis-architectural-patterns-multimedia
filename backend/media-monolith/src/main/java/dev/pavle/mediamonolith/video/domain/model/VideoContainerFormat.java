@@ -1,8 +1,8 @@
-package dev.pavle.mediamonolith.processing.model.vo;
+package dev.pavle.mediamonolith.video.domain.model;
 
 import java.util.Arrays;
 
-import dev.pavle.mediamonolith.processing.exception.VideoProcessingException;
+import dev.pavle.mediamonolith.video.infrastructure.processing.VideoProcessingException;
 import lombok.Getter;
 
 @Getter

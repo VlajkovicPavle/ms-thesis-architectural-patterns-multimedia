@@ -1,13 +1,11 @@
-package dev.pavle.mediamonolith.processing.service;
+package dev.pavle.mediamonolith.video.infrastructure.processing;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
 import org.springframework.stereotype.Service;
 
-import dev.pavle.mediamonolith.processing.exception.VideoProcessingException;
-import dev.pavle.mediamonolith.processing.ffprobe.FfprobeParser;
-import dev.pavle.mediamonolith.processing.model.vo.VideoMetadata;
+import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
 
