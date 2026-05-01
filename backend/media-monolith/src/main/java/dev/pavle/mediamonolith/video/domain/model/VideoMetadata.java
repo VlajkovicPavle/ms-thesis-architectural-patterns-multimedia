@@ -1,6 +1,6 @@
-package dev.pavle.mediamonolith.processing.model.vo;
+package dev.pavle.mediamonolith.video.domain.model;
 
-import dev.pavle.mediamonolith.processing.exception.VideoProcessingException;
+import dev.pavle.mediamonolith.video.infrastructure.processing.VideoProcessingException;
 import jakarta.persistence.Embeddable;
 
 @Embeddable

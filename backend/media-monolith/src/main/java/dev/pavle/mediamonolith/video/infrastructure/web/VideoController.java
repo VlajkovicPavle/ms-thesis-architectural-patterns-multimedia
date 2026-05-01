@@ -1,4 +1,4 @@
-package dev.pavle.mediamonolith.processing.controller;
+package dev.pavle.mediamonolith.video.infrastructure.web;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import dev.pavle.mediamonolith.processing.service.VideoService;
+import dev.pavle.mediamonolith.video.application.VideoService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -29,6 +29,6 @@ public class VideoController {
   @ResponseStatus(HttpStatus.CREATED)
   public void create(@RequestParam("file") MultipartFile file) throws IOException {
     log.info("File upload started: name={} size={}", file.getOriginalFilename(), file.getSize());
-    service.upload(file);
+    service.upload(file.getInputStream(), file.getOriginalFilename());
   }
 }

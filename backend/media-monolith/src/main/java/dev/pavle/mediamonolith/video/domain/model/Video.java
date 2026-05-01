@@ -1,13 +1,10 @@
-package dev.pavle.mediamonolith.processing.model.entity;
+package dev.pavle.mediamonolith.video.domain.model;
 
-import common.model.BaseEntity;
+import java.util.UUID;
 
-import dev.pavle.mediamonolith.processing.model.vo.VideoMetadata;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import lombok.*;
-
-import java.util.UUID;
 
 @Entity
 @Getter

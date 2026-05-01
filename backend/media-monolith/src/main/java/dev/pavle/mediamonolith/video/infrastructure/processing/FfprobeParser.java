@@ -1,13 +1,12 @@
-package dev.pavle.mediamonolith.processing.ffprobe;
+package dev.pavle.mediamonolith.video.infrastructure.processing;
 
 import java.util.stream.StreamSupport;
 
 import org.springframework.stereotype.Component;
 
-import dev.pavle.mediamonolith.processing.exception.VideoProcessingException;
-import dev.pavle.mediamonolith.processing.model.vo.VideoCodec;
-import dev.pavle.mediamonolith.processing.model.vo.VideoContainerFormat;
-import dev.pavle.mediamonolith.processing.model.vo.VideoMetadata;
+import dev.pavle.mediamonolith.video.domain.model.VideoCodec;
+import dev.pavle.mediamonolith.video.domain.model.VideoContainerFormat;
+import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
 import tools.jackson.databind.JsonNode;
 
 @Component

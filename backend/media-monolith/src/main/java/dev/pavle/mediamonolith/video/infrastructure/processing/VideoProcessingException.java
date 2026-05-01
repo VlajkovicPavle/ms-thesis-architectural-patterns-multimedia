@@ -1,4 +1,4 @@
-package dev.pavle.mediamonolith.processing.exception;
+package dev.pavle.mediamonolith.video.infrastructure.processing;
 
 public class VideoProcessingException extends RuntimeException {
 
