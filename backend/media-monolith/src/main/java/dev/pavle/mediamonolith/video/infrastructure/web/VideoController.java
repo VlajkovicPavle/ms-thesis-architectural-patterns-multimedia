@@ -29,6 +29,6 @@ public class VideoController {
   @ResponseStatus(HttpStatus.CREATED)
   public void create(@RequestParam("file") MultipartFile file) throws IOException {
     log.info("File upload started: name={} size={}", file.getOriginalFilename(), file.getSize());
-    service.upload(file);
+    service.upload(file.getInputStream(), file.getOriginalFilename());
   }
 }

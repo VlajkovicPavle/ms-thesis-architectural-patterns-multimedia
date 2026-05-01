@@ -2,7 +2,6 @@ package dev.pavle.mediamonolith.video.domain.model;
 
 import java.util.UUID;
 
-import dev.pavle.mediamonolith.shared.BaseEntity;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import lombok.*;
