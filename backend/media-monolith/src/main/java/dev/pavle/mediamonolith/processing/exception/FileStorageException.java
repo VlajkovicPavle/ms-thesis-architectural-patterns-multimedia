@@ -1,4 +1,4 @@
-package dev.pavle.mediamonolith.processing.exceptions;
+package dev.pavle.mediamonolith.processing.exception;
 
 public class FileStorageException extends RuntimeException {
 

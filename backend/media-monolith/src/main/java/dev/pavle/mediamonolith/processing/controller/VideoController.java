@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import dev.pavle.mediamonolith.processing.service.VideoService;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/video")
+@Slf4j
 public class VideoController {
 
   private final VideoService service;
@@ -24,9 +26,9 @@ public class VideoController {
   }
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @ResponseStatus(HttpStatus.OK)
-  public void create(@RequestParam("file") MultipartFile file)
-      throws IOException, InterruptedException {
+  @ResponseStatus(HttpStatus.CREATED)
+  public void create(@RequestParam("file") MultipartFile file) throws IOException {
+    log.info("File upload started: name={} size={}", file.getOriginalFilename(), file.getSize());
     service.upload(file);
   }
 }
