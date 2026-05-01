@@ -1,4 +1,4 @@
-package dev.pavle.mediamonolith.video.infrastructure.storage;
+package dev.pavle.mediamonolith.video.infrastructure.fileStorage;
 
 public class FileStorageException extends RuntimeException {
 

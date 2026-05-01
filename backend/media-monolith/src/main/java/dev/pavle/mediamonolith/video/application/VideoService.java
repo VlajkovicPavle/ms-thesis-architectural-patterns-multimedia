@@ -5,13 +5,14 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 
+import dev.pavle.mediamonolith.video.domain.port.FileStoragePort;
 import dev.pavle.mediamonolith.video.infrastructure.processing.ProcessingService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import dev.pavle.mediamonolith.video.domain.model.Video;
 import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
-import dev.pavle.mediamonolith.video.infrastructure.storage.FileRepository;
+import dev.pavle.mediamonolith.video.infrastructure.fileStorage.FileRepository;
 import dev.pavle.mediamonolith.video.infrastructure.persistence.VideoRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,17 +20,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VideoService {
 
-  private final FileRepository fileRepository;
   private final VideoRepository videoRepository;
   private final ProcessingService processingService;
+  private final FileStoragePort fileStoragePort;
 
   public VideoService(
-      FileRepository fileRepository,
-      VideoRepository videoRepository,
-      ProcessingService processingService) {
-    this.fileRepository = fileRepository;
+          VideoRepository videoRepository,
+          ProcessingService processingService,
+          FileRepository fileStoragePort) {
     this.videoRepository = videoRepository;
     this.processingService = processingService;
+      this.fileStoragePort = fileStoragePort;
   }
 
   public void upload(MultipartFile file) throws IOException {
@@ -45,12 +46,12 @@ public class VideoService {
             Optional.ofNullable(file.getOriginalFilename())
                     .filter(name -> !name.isBlank())
                     .orElse(UUID.randomUUID().toString());
-    return fileRepository.createTemp(file.getInputStream(), tmpFileName);
+    return fileStoragePort.createTemporary(file.getInputStream(), tmpFileName);
   }
 
   private Video createVideo(Path tmpVideoPath, String originalName, VideoMetadata metadata){
     Video video = new Video(originalName, metadata);
-    Path savedSysPath = fileRepository.persistTempFile(tmpVideoPath, video.getSysName());
+    Path savedSysPath = fileStoragePort.saveTemporary(tmpVideoPath, video.getSysName());
     video.setSysPath(savedSysPath.toString());
     return video;
   }

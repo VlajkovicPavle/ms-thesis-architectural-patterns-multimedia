@@ -1,4 +1,4 @@
-package dev.pavle.mediamonolith.video.infrastructure.storage;
+package dev.pavle.mediamonolith.video.infrastructure.fileStorage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import dev.pavle.mediamonolith.video.domain.port.FileStoragePort;
 import org.springframework.stereotype.Repository;
 
 import dev.pavle.mediamonolith.config.StorageProperties;
@@ -14,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Repository
 @Slf4j
-public class FileRepository {
+public class FileRepository implements FileStoragePort {
   private static final String TMP_PREFIX = "tmp";
   private static final String STORAGE_PREFIX = "storage";
   private final Path rootStoragePath;
@@ -24,19 +25,19 @@ public class FileRepository {
     createFileRepositories(rootStoragePath);
   }
 
-  public Path createTemp(InputStream inputStream, String fileName) {
-    Path tmpPath = rootStoragePath.resolve(TMP_PREFIX).resolve(fileName);
+  public Path createTemporary(InputStream inputStream, String tmpFileName) {
+    Path tmpPath = rootStoragePath.resolve(TMP_PREFIX).resolve(tmpFileName);
     try {
       Files.copy(inputStream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
       log.info("Temp file created: path={}", tmpPath);
 
     } catch (IOException e) {
-      throw new FileStorageException("Failed to write temp file: " + fileName, e);
+      throw new FileStorageException("Failed to write temp file: " + tmpFileName, e);
     }
     return tmpPath;
   }
 
-  public Path persistTempFile(Path tmpPath, String fileName) {
+  public Path saveTemporary(Path tmpPath, String fileName) {
     Path target = rootStoragePath.resolve(STORAGE_PREFIX).resolve(fileName);
     try {
       return Files.move(tmpPath, target);
