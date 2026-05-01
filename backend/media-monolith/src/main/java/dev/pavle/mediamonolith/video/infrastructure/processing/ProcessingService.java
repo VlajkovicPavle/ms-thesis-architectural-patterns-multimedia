@@ -3,6 +3,7 @@ package dev.pavle.mediamonolith.video.infrastructure.processing;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import dev.pavle.mediamonolith.video.domain.port.ProcessingPort;
 import org.springframework.stereotype.Service;
 
 import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
@@ -11,7 +12,7 @@ import tools.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
-public class ProcessingService {
+public class ProcessingService  implements ProcessingPort {
 
   private final ObjectMapper objectMapper;
   private final FfprobeParser ffprobeParser;
@@ -21,18 +22,18 @@ public class ProcessingService {
     this.ffprobeParser = ffprobeParser;
   }
 
-  public VideoMetadata extractMetadata(Path tmpPath) {
+  public VideoMetadata extractMetadata(Path filePath) {
     try {
-      var process = ffprobeCommand(tmpPath).start();
+      var process = ffprobeCommand(filePath).start();
       String metadataJson = new String(process.getInputStream().readAllBytes());
       int exitCode = process.waitFor();
       log.info("Ffprobe finished: exitCode={}", exitCode);
       if (exitCode != 0) {
-        throw new VideoProcessingException("ffprobe failed for file: " + tmpPath);
+        throw new VideoProcessingException("ffprobe failed for file: " + filePath);
       }
       return ffprobeParser.parse(objectMapper.readTree(metadataJson));
     } catch (InterruptedException | IOException e) {
-      throw new VideoProcessingException("ffprobe failed for file: " + tmpPath, e);
+      throw new VideoProcessingException("ffprobe failed for file: " + filePath, e);
     }
   }
 

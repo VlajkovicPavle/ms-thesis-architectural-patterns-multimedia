@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import dev.pavle.mediamonolith.video.domain.port.FileStoragePort;
+import dev.pavle.mediamonolith.video.domain.port.ProcessingPort;
 import dev.pavle.mediamonolith.video.infrastructure.processing.ProcessingService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class VideoService {
 
   private final VideoRepository videoRepository;
-  private final ProcessingService processingService;
+  private final ProcessingPort processingPort;
   private final FileStoragePort fileStoragePort;
 
   public VideoService(
@@ -29,13 +30,13 @@ public class VideoService {
           ProcessingService processingService,
           FileRepository fileStoragePort) {
     this.videoRepository = videoRepository;
-    this.processingService = processingService;
+    this.processingPort = processingService;
       this.fileStoragePort = fileStoragePort;
   }
 
   public void upload(MultipartFile file) throws IOException {
     Path tmpPath = createTmpVideo(file);
-    VideoMetadata metadata = processingService.extractMetadata(tmpPath);
+    VideoMetadata metadata = processingPort.extractMetadata(tmpPath);
     Video createdVideo = createVideo(tmpPath,file.getOriginalFilename(),metadata);
     videoRepository.save(createdVideo);
     log.info("Created video {}", createdVideo);
