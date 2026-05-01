@@ -10,7 +10,7 @@ import java.nio.file.StandardCopyOption;
 import org.springframework.stereotype.Repository;
 
 import dev.pavle.mediamonolith.config.StorageProperties;
-import dev.pavle.mediamonolith.processing.exceptions.FileStorageException;
+import dev.pavle.mediamonolith.processing.exception.FileStorageException;
 import lombok.extern.slf4j.Slf4j;
 
 @Repository
@@ -37,7 +37,7 @@ public class FileRepository {
     return tmpPath;
   }
 
-  public Path persist(Path tmpPath, String fileName) {
+  public Path persistTempFile(Path tmpPath, String fileName) {
     Path target = rootStoragePath.resolve(STORAGE_PREFIX).resolve(fileName);
     try {
       return Files.move(tmpPath, target);

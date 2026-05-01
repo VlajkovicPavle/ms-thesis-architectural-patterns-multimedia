@@ -5,23 +5,25 @@ import java.nio.file.Path;
 
 import org.springframework.stereotype.Service;
 
-import tools.jackson.databind.ObjectMapper;
-
-import dev.pavle.mediamonolith.processing.exceptions.VideoProcessingException;
-import dev.pavle.mediamonolith.processing.model.VideoProbeResult;
+import dev.pavle.mediamonolith.processing.exception.VideoProcessingException;
+import dev.pavle.mediamonolith.processing.ffprobe.FfprobeParser;
+import dev.pavle.mediamonolith.processing.model.vo.VideoMetadata;
 import lombok.extern.slf4j.Slf4j;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
 public class ProcessingService {
 
   private final ObjectMapper objectMapper;
+  private final FfprobeParser ffprobeParser;
 
-  public ProcessingService(ObjectMapper objectMapper) {
+  public ProcessingService(ObjectMapper objectMapper, FfprobeParser ffprobeParser) {
     this.objectMapper = objectMapper;
+    this.ffprobeParser = ffprobeParser;
   }
 
-  public VideoProbeResult extractMetadata(Path tmpPath) {
+  public VideoMetadata extractMetadata(Path tmpPath) {
     try {
       var process = ffprobeCommand(tmpPath).start();
       String metadataJson = new String(process.getInputStream().readAllBytes());
@@ -30,7 +32,7 @@ public class ProcessingService {
       if (exitCode != 0) {
         throw new VideoProcessingException("ffprobe failed for file: " + tmpPath);
       }
-      return VideoProbeResult.fromFfprobeJson(objectMapper.readTree(metadataJson));
+      return ffprobeParser.parse(objectMapper.readTree(metadataJson));
     } catch (InterruptedException | IOException e) {
       throw new VideoProcessingException("ffprobe failed for file: " + tmpPath, e);
     }

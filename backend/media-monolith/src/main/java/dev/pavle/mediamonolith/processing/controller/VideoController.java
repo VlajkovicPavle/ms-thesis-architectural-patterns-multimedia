@@ -26,10 +26,9 @@ public class VideoController {
   }
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @ResponseStatus(HttpStatus.OK)
+  @ResponseStatus(HttpStatus.CREATED)
   public void create(@RequestParam("file") MultipartFile file) throws IOException {
-    log.info(
-        "File upload started: name={} size={}", file.getOriginalFilename(), file.getBytes().length);
+    log.info("File upload started: name={} size={}", file.getOriginalFilename(), file.getSize());
     service.upload(file);
   }
 }
