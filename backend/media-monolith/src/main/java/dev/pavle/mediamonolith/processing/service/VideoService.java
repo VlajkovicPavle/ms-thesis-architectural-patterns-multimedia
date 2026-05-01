@@ -34,20 +34,20 @@ public class VideoService {
   public void upload(MultipartFile file) throws IOException {
     Path tmpPath = createTmpVideo(file);
     VideoMetadata metadata = processingService.extractMetadata(tmpPath);
-    Video createdVideo = createVideo(tmpPath,file.getOriginalFilename(),metadata);
+    Video createdVideo = createVideo(tmpPath, file.getOriginalFilename(), metadata);
     videoRepository.save(createdVideo);
     log.info("Created video {}", createdVideo);
   }
 
   private Path createTmpVideo(MultipartFile file) throws IOException {
     String tmpFileName =
-            Optional.ofNullable(file.getOriginalFilename())
-                    .filter(name -> !name.isBlank())
-                    .orElse(UUID.randomUUID().toString());
+        Optional.ofNullable(file.getOriginalFilename())
+            .filter(name -> !name.isBlank())
+            .orElse(UUID.randomUUID().toString());
     return fileRepository.createTemp(file.getInputStream(), tmpFileName);
   }
 
-  private Video createVideo(Path tmpVideoPath, String originalName, VideoMetadata metadata){
+  private Video createVideo(Path tmpVideoPath, String originalName, VideoMetadata metadata) {
     Video video = new Video(originalName, metadata);
     Path savedSysPath = fileRepository.persistTempFile(tmpVideoPath, video.getSysName());
     video.setSysPath(savedSysPath.toString());
