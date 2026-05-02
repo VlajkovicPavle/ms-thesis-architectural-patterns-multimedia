@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import dev.pavle.mediamonolith.video.application.model.view.VideoView;
 import dev.pavle.mediamonolith.video.domain.model.StoredFileRef;
 import dev.pavle.mediamonolith.video.domain.model.Video;
 import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
@@ -31,12 +32,13 @@ public class VideoService {
     this.fileStoragePort = fileStoragePort;
   }
 
-  public void upload(InputStream content, String originalName) {
+  public VideoView upload(InputStream content, String originalName) {
     StoredFileRef tmpRef = createTmpVideo(content, originalName);
     VideoMetadata metadata = videoProcessorPort.extractMetadata(tmpRef);
     Video createdVideo = createVideo(tmpRef, originalName, metadata);
-    videoStoragePort.save(createdVideo);
-    log.info("Created video {}", createdVideo);
+    Video saved = videoStoragePort.save(createdVideo);
+    log.info("Created video {}", saved);
+    return VideoView.from(saved);
   }
 
   private StoredFileRef createTmpVideo(InputStream content, String originalName) {
