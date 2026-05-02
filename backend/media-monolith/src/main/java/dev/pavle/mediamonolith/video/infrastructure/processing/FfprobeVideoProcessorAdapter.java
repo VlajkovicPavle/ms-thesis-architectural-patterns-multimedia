@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import org.springframework.stereotype.Service;
 
-import dev.pavle.mediamonolith.video.domain.model.StoredFileRef;
-import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
+import dev.pavle.mediamonolith.video.domain.model.shared.StoredFileRef;
+import dev.pavle.mediamonolith.video.domain.model.video.VideoMetadata;
 import dev.pavle.mediamonolith.video.domain.port.VideoProcessorPort;
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;

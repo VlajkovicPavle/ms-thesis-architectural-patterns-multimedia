@@ -1,8 +1,8 @@
 package dev.pavle.mediamonolith.video.application.model.view;
 
-import dev.pavle.mediamonolith.video.domain.model.VideoCodec;
-import dev.pavle.mediamonolith.video.domain.model.VideoContainerFormat;
-import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
+import dev.pavle.mediamonolith.video.domain.model.video.VideoCodec;
+import dev.pavle.mediamonolith.video.domain.model.video.VideoContainerFormat;
+import dev.pavle.mediamonolith.video.domain.model.video.VideoMetadata;
 
 public record VideoMetadataView(
     VideoCodec videoCodec,

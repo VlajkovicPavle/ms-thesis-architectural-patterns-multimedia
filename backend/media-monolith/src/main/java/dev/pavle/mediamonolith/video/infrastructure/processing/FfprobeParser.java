@@ -4,9 +4,9 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.stereotype.Component;
 
-import dev.pavle.mediamonolith.video.domain.model.VideoCodec;
-import dev.pavle.mediamonolith.video.domain.model.VideoContainerFormat;
-import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
+import dev.pavle.mediamonolith.video.domain.model.video.VideoCodec;
+import dev.pavle.mediamonolith.video.domain.model.video.VideoContainerFormat;
+import dev.pavle.mediamonolith.video.domain.model.video.VideoMetadata;
 import tools.jackson.databind.JsonNode;
 
 @Component

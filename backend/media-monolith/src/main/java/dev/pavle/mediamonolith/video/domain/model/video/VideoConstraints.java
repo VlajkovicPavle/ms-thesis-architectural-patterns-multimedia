@@ -1,4 +1,4 @@
-package dev.pavle.mediamonolith.video.domain.model;
+package dev.pavle.mediamonolith.video.domain.model.video;
 
 public final class VideoConstraints {
   public static final int MIN_VIDEO_WIDTH = 144;

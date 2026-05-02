@@ -10,7 +10,7 @@ import java.nio.file.StandardCopyOption;
 import org.springframework.stereotype.Repository;
 
 import dev.pavle.mediamonolith.config.StorageProperties;
-import dev.pavle.mediamonolith.video.domain.model.StoredFileRef;
+import dev.pavle.mediamonolith.video.domain.model.shared.StoredFileRef;
 import dev.pavle.mediamonolith.video.domain.port.FileStoragePort;
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,4 +1,4 @@
-package dev.pavle.mediamonolith.video.domain.model;
+package dev.pavle.mediamonolith.video.domain.model.shared;
 
 import java.time.Instant;
 import java.util.UUID;

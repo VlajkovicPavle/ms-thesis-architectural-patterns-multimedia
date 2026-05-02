@@ -3,7 +3,7 @@ package dev.pavle.mediamonolith.video.application.model.view;
 import java.time.Instant;
 import java.util.UUID;
 
-import dev.pavle.mediamonolith.video.domain.model.Video;
+import dev.pavle.mediamonolith.video.domain.model.video.Video;
 
 public record VideoView(
     UUID id, String originalName, VideoMetadataView metadata, Instant createdAt) {

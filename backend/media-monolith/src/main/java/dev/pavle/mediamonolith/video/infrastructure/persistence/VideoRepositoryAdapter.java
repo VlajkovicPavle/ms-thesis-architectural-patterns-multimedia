@@ -2,7 +2,7 @@ package dev.pavle.mediamonolith.video.infrastructure.persistence;
 
 import org.springframework.stereotype.Repository;
 
-import dev.pavle.mediamonolith.video.domain.model.Video;
+import dev.pavle.mediamonolith.video.domain.model.video.Video;
 import dev.pavle.mediamonolith.video.domain.port.VideoStoragePort;
 
 @Repository
