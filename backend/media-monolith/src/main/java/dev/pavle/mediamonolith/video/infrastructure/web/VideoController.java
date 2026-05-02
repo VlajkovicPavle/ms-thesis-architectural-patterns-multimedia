@@ -4,14 +4,12 @@ import java.io.IOException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import dev.pavle.mediamonolith.video.application.VideoService;
+import dev.pavle.mediamonolith.video.application.model.view.VideoView;
+import dev.pavle.mediamonolith.video.infrastructure.web.dto.CreateVideoResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -27,8 +25,9 @@ public class VideoController {
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
-  public void create(@RequestParam("file") MultipartFile file) throws IOException {
+  public CreateVideoResponse create(@RequestParam("file") MultipartFile file) throws IOException {
     log.info("File upload started: name={} size={}", file.getOriginalFilename(), file.getSize());
-    service.upload(file.getInputStream(), file.getOriginalFilename());
+    VideoView view = service.upload(file.getInputStream(), file.getOriginalFilename());
+    return CreateVideoResponse.from(view);
   }
 }
