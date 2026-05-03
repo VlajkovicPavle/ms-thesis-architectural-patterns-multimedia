@@ -35,12 +35,6 @@ public class Rendition extends BaseEntity {
     this.name = generateName();
   }
 
-  @PostPersist
-  private void postPersist() {
-    // TODO:
-    // Notify on the channel of insertion event!
-  }
-
   private String generateName() {
     return "%s-%s-rendition".formatted(video.getSysName(), this.resolution);
   }
