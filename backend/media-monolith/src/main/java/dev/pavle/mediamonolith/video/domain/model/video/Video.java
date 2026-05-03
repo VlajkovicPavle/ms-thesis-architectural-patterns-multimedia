@@ -18,17 +18,13 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Video extends BaseAggregateRoot<Video> {
 
-  @Getter
-  private String originalName;
+  @Getter private String originalName;
 
-  @Getter
-  private String sysName;
+  @Getter private String sysName;
 
-  @Getter
-  @Setter private String sysPath = null;
+  @Getter @Setter private String sysPath = null;
 
-  @Getter
-  @Embedded private VideoMetadata metadata;
+  @Getter @Embedded private VideoMetadata metadata;
 
   @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)
   private final ArrayList<Rendition> renditions = new ArrayList<>();
@@ -39,8 +35,8 @@ public class Video extends BaseAggregateRoot<Video> {
     this.sysName = generateSysName();
   }
 
-  public void addRendition(Rendition rendition){
-    if(rendition.getResolution().isUpscaleOf(this.metadata.height())){
+  public void addRendition(Rendition rendition) {
+    if (rendition.getResolution().isUpscaleOf(this.metadata.height())) {
       throw new InvalidRenditionResolutionException(
           rendition.getResolution(), this.sysName, this.metadata.height());
     }
