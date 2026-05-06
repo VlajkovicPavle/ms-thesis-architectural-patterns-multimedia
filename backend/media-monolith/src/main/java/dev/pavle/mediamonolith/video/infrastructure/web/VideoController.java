@@ -38,7 +38,7 @@ public class VideoController {
 
   @PostMapping("/rendition")
   public void createRendition(@Valid @RequestBody CreateRenditionsRequest createRenditionsRequest) {
-    log.info("Rendition request received, {}",createRenditionsRequest);
+    log.info("Rendition request received, {}", createRenditionsRequest);
     renditionService.createRendition(
         createRenditionsRequest.videoId(), createRenditionsRequest.resolutions());
   }
