@@ -20,10 +20,10 @@ public class Rendition extends BaseEntity {
 
   @Setter @Embedded private StoredFileRef storedFileRef;
 
+  @Enumerated(EnumType.STRING)
   private VideoResolution resolution;
 
-  @EqualsAndHashCode.Include
-  private String name;
+  @EqualsAndHashCode.Include private String name;
 
   @Setter
   @Enumerated(EnumType.STRING)
@@ -40,5 +40,4 @@ public class Rendition extends BaseEntity {
   private String generateName() {
     return "%s-%s-rendition".formatted(video.getSysName(), this.resolution);
   }
-
 }
