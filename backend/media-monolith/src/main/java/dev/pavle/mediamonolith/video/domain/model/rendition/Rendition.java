@@ -11,6 +11,7 @@ import lombok.*;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class Rendition extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -21,6 +22,7 @@ public class Rendition extends BaseEntity {
 
   private VideoResolution resolution;
 
+  @EqualsAndHashCode.Include
   private String name;
 
   @Setter
@@ -38,4 +40,5 @@ public class Rendition extends BaseEntity {
   private String generateName() {
     return "%s-%s-rendition".formatted(video.getSysName(), this.resolution);
   }
+
 }

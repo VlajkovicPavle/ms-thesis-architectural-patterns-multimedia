@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
+import dev.pavle.mediamonolith.video.domain.exception.DuplicateRenditionException;
 import dev.pavle.mediamonolith.video.domain.exception.InvalidRenditionResolutionException;
 import dev.pavle.mediamonolith.video.domain.model.rendition.Rendition;
 import dev.pavle.mediamonolith.video.domain.model.shared.BaseAggregateRoot;
@@ -36,6 +37,9 @@ public class Video extends BaseAggregateRoot<Video> {
   }
 
   public void addRendition(Rendition rendition) {
+    if (renditions.contains(rendition)) {
+      throw new DuplicateRenditionException(rendition.getResolution(), this.sysName);
+    }
     if (rendition.getResolution().isUpscaleOf(this.metadata.height())) {
       throw new InvalidRenditionResolutionException(
           rendition.getResolution(), this.sysName, this.metadata.height());
