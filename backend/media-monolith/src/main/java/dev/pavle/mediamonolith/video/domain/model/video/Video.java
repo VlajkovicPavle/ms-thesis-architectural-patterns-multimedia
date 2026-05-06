@@ -1,6 +1,7 @@
 package dev.pavle.mediamonolith.video.domain.model.video;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
@@ -28,7 +29,7 @@ public class Video extends BaseAggregateRoot<Video> {
   @Getter @Embedded private VideoMetadata metadata;
 
   @OneToMany(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true)
-  private final ArrayList<Rendition> renditions = new ArrayList<>();
+  private final Set<Rendition> renditions = new LinkedHashSet<>();
 
   public Video(String originalName, VideoMetadata metadata) {
     this.originalName = originalName;
