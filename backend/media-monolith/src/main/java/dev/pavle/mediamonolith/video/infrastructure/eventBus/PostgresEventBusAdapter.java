@@ -6,15 +6,16 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
+import org.postgresql.PGConnection;
+import org.postgresql.PGNotification;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
 import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
 import dev.pavle.mediamonolith.video.domain.port.RenditionJobEventBusPort;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
-import org.postgresql.PGConnection;
-import org.postgresql.PGNotification;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 

@@ -1,11 +1,11 @@
 package dev.pavle.mediamonolith.video.application.event;
 
-import dev.pavle.mediamonolith.video.domain.port.RenditionJobEventBusPort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
+import dev.pavle.mediamonolith.video.domain.port.RenditionJobEventBusPort;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -14,9 +14,9 @@ public class RenditionEventListener {
 
   private final RenditionJobEventBusPort renditionJobEventBusPort;
 
-    public RenditionEventListener(RenditionJobEventBusPort renditionJobEventBusPort) {
-        this.renditionJobEventBusPort = renditionJobEventBusPort;
-    }
+  public RenditionEventListener(RenditionJobEventBusPort renditionJobEventBusPort) {
+    this.renditionJobEventBusPort = renditionJobEventBusPort;
+  }
 
   @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
   private void onCreate(CreateRenditionEvent event) {
