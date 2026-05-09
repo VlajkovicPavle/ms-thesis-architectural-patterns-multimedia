@@ -2,6 +2,7 @@ package dev.pavle.mediamonolith.video.infrastructure.processing;
 
 import java.io.IOException;
 
+import org.hibernate.engine.spi.Resolution;
 import org.springframework.stereotype.Service;
 
 import dev.pavle.mediamonolith.video.domain.model.shared.StoredFileRef;
@@ -36,6 +37,11 @@ public class FfprobeVideoProcessorAdapter implements VideoProcessorPort {
     } catch (InterruptedException | IOException e) {
       throw new VideoProcessingException("ffprobe failed for file: " + ref.identifier(), e);
     }
+  }
+
+  @Override
+  public StoredFileRef createRendition(StoredFileRef parentVideo, Resolution resolution) {
+    return null;
   }
 
   private ProcessBuilder ffprobeCommand(String filePath) {

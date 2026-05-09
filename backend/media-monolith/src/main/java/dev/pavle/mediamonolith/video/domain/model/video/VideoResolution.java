@@ -3,6 +3,9 @@ package dev.pavle.mediamonolith.video.domain.model.video;
 import java.util.Arrays;
 import java.util.Optional;
 
+import lombok.Getter;
+
+@Getter
 public enum VideoResolution {
   SD_360(360),
   SD_480(480),

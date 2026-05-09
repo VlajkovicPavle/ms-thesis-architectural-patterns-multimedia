@@ -1,16 +1,16 @@
 package dev.pavle.mediamonolith.video.infrastructure.eventBus;
 
+import dev.pavle.mediamonolith.video.domain.port.RenditionJobEventBusPort;
 import org.springframework.stereotype.Component;
 
 import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
-import dev.pavle.mediamonolith.video.domain.port.RenditionJobProducerPort;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 @Component
-public class PostgresEventBusAdapter implements RenditionJobProducerPort {
+public class PostgresEventBusAdapter implements RenditionJobEventBusPort {
   private static final String CHANNEL_NAME = "rendition_jobs";
 
   @PersistenceContext private EntityManager entityManager;
@@ -34,5 +34,11 @@ public class PostgresEventBusAdapter implements RenditionJobProducerPort {
         .setParameter("channel", CHANNEL_NAME)
         .setParameter("payload", payload)
         .getSingleResult();
+  }
+
+  @Override
+  public void consumeCreateRenditionJob() {
+
+
   }
 }
