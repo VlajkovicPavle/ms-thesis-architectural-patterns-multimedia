@@ -7,9 +7,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import dev.pavle.mediamonolith.video.application.model.view.VideoView;
-import dev.pavle.mediamonolith.video.domain.model.StoredFileRef;
-import dev.pavle.mediamonolith.video.domain.model.Video;
-import dev.pavle.mediamonolith.video.domain.model.VideoMetadata;
+import dev.pavle.mediamonolith.video.domain.model.shared.StoredFileRef;
+import dev.pavle.mediamonolith.video.domain.model.video.Video;
+import dev.pavle.mediamonolith.video.domain.model.video.VideoMetadata;
 import dev.pavle.mediamonolith.video.domain.port.FileStoragePort;
 import dev.pavle.mediamonolith.video.domain.port.VideoProcessorPort;
 import dev.pavle.mediamonolith.video.domain.port.VideoStoragePort;

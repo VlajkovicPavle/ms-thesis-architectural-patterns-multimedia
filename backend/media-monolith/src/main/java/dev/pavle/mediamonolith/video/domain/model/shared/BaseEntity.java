@@ -1,4 +1,4 @@
-package dev.pavle.mediamonolith.video.domain.model;
+package dev.pavle.mediamonolith.video.domain.model.shared;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -9,7 +9,6 @@ import lombok.Getter;
 @MappedSuperclass
 @Getter
 public abstract class BaseEntity {
-
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
