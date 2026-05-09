@@ -4,5 +4,4 @@ import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
 
 public interface RenditionJobEventBusPort {
     void publishCreateRenditionJob(CreateRenditionEvent event);
-    void consumeCreateRenditionJob();
 }
