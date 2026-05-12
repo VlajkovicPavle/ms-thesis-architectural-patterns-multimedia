@@ -1,6 +1,7 @@
 package dev.pavle.mediamonolith.video.domain.model.video;
 
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -8,6 +9,7 @@ import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
 import dev.pavle.mediamonolith.video.domain.exception.DuplicateRenditionException;
 import dev.pavle.mediamonolith.video.domain.exception.InvalidRenditionResolutionException;
 import dev.pavle.mediamonolith.video.domain.model.rendition.Rendition;
+import dev.pavle.mediamonolith.video.domain.model.rendition.RenditionStatus;
 import dev.pavle.mediamonolith.video.domain.model.shared.BaseAggregateRoot;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
@@ -38,13 +40,30 @@ public class Video extends BaseAggregateRoot<Video> {
   }
 
   public void addRendition(Rendition rendition) {
-    if (renditions.contains(rendition)) {
-      throw new DuplicateRenditionException(rendition.getResolution(), this.sysName);
+    if (!this.getId().equals(rendition.getVideo().getId())) {
+      throw new IllegalArgumentException(
+          "Rendition does not belong to video %s".formatted(this.getId()));
     }
     if (rendition.getResolution().isUpscaleOf(this.metadata.height())) {
       throw new InvalidRenditionResolutionException(
           rendition.getResolution(), this.sysName, this.metadata.height());
     }
+    Optional<Rendition> existing =
+        this.renditions.stream()
+            .filter(stored -> stored.getResolution().equals(rendition.getResolution()))
+            .findFirst();
+    if (existing.isPresent()) {
+      Rendition stored = existing.get();
+      if (stored.getStatus() != RenditionStatus.CANCELED
+          && stored.getStatus() != RenditionStatus.ERROR) {
+        throw new DuplicateRenditionException(rendition.getResolution(), this.sysName);
+      }
+      stored.setStatus(RenditionStatus.PENDING);
+      stored.setError(null);
+      registerEvent(new CreateRenditionEvent(this.getId(), rendition.getResolution()));
+      return;
+    }
+
     this.renditions.add(rendition);
     registerEvent(new CreateRenditionEvent(this.getId(), rendition.getResolution()));
   }

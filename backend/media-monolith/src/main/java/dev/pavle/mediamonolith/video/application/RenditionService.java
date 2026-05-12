@@ -34,6 +34,5 @@ public class RenditionService {
   public void handleCreateRenditionEvent(CreateRenditionEvent createRenditionEvent) {
     // TODO:
     // Call scheduler
-
   }
 }
