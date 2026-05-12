@@ -2,28 +2,25 @@ package dev.pavle.mediamonolith.video.infrastructure.processing;
 
 import java.io.IOException;
 
-import org.hibernate.engine.spi.Resolution;
 import org.springframework.stereotype.Service;
 
 import dev.pavle.mediamonolith.video.domain.model.shared.StoredFileRef;
 import dev.pavle.mediamonolith.video.domain.model.video.VideoMetadata;
-import dev.pavle.mediamonolith.video.domain.port.VideoProcessorPort;
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
-public class FfprobeVideoProcessorAdapter implements VideoProcessorPort {
+public class FFprobeVideoProcessorAdapter {
 
   private final ObjectMapper objectMapper;
-  private final FfprobeParser ffprobeParser;
+  private final FFprobeParser ffprobeParser;
 
-  public FfprobeVideoProcessorAdapter(ObjectMapper objectMapper, FfprobeParser ffprobeParser) {
+  public FFprobeVideoProcessorAdapter(ObjectMapper objectMapper, FFprobeParser ffprobeParser) {
     this.objectMapper = objectMapper;
     this.ffprobeParser = ffprobeParser;
   }
 
-  @Override
   public VideoMetadata extractMetadata(StoredFileRef ref) {
     try {
       var process = ffprobeCommand(ref.identifier()).start();
@@ -37,11 +34,6 @@ public class FfprobeVideoProcessorAdapter implements VideoProcessorPort {
     } catch (InterruptedException | IOException e) {
       throw new VideoProcessingException("ffprobe failed for file: " + ref.identifier(), e);
     }
-  }
-
-  @Override
-  public StoredFileRef createRendition(StoredFileRef parentVideo, Resolution resolution) {
-    return null;
   }
 
   private ProcessBuilder ffprobeCommand(String filePath) {
