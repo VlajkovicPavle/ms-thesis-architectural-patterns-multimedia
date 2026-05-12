@@ -11,6 +11,7 @@ import org.postgresql.PGNotification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import dev.pavle.mediamonolith.video.application.RenditionJobHandler;
 import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
 import dev.pavle.mediamonolith.video.domain.port.RenditionJobEventBusPort;
 import jakarta.persistence.EntityManager;
@@ -28,11 +29,14 @@ public class PostgresEventBusAdapter implements RenditionJobEventBusPort {
 
   private final ObjectMapper objectMapper;
   private final DataSource dataSource;
+  private final RenditionJobHandler renditionJobHandler;
   private PGConnection listenerConnection;
 
-  public PostgresEventBusAdapter(ObjectMapper objectMapper, DataSource dataSource) {
+  public PostgresEventBusAdapter(
+      ObjectMapper objectMapper, DataSource dataSource, RenditionJobHandler renditionJobHandler) {
     this.objectMapper = objectMapper;
     this.dataSource = dataSource;
+    this.renditionJobHandler = renditionJobHandler;
   }
 
   @Override
@@ -64,6 +68,7 @@ public class PostgresEventBusAdapter implements RenditionJobEventBusPort {
         CreateRenditionEvent event =
             objectMapper.readValue(notification.getParameter(), CreateRenditionEvent.class);
         log.info("Received rendition job: {}", event);
+        renditionJobHandler.dispatchCreateRenditionJob(event);
       }
     } catch (SQLException e) {
       log.error("Listener connection lost, will reconnect on next poll", e);
