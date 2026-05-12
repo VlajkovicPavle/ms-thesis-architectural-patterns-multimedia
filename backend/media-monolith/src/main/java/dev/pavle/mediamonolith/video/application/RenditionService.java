@@ -3,6 +3,7 @@ package dev.pavle.mediamonolith.video.application;
 import java.util.Set;
 import java.util.UUID;
 
+import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
 import org.springframework.stereotype.Service;
 
 import dev.pavle.mediamonolith.video.domain.exception.VideoNotFoundException;
@@ -28,5 +29,11 @@ public class RenditionService {
     var renditions = resolutions.stream().map((resolution -> new Rendition(video, resolution)));
     renditions.forEach(video::addRendition);
     videoStoragePort.save(video);
+  }
+
+  public void handleCreateRenditionEvent(CreateRenditionEvent createRenditionEvent) {
+    // TODO:
+    // Call scheduler
+
   }
 }
