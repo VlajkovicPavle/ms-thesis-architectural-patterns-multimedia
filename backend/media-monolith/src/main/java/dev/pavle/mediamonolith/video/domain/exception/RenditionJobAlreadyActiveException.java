@@ -1,7 +1,8 @@
 package dev.pavle.mediamonolith.video.domain.exception;
 
-import dev.pavle.mediamonolith.video.domain.model.video.VideoResolution;
 import java.util.UUID;
+
+import dev.pavle.mediamonolith.video.domain.model.video.VideoResolution;
 
 public class RenditionJobAlreadyActiveException extends RuntimeException {
 

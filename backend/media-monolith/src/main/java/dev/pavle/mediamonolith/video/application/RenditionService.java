@@ -3,9 +3,9 @@ package dev.pavle.mediamonolith.video.application;
 import java.util.Set;
 import java.util.UUID;
 
-import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
 import org.springframework.stereotype.Service;
 
+import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
 import dev.pavle.mediamonolith.video.domain.exception.VideoNotFoundException;
 import dev.pavle.mediamonolith.video.domain.model.rendition.Rendition;
 import dev.pavle.mediamonolith.video.domain.model.video.Video;

@@ -31,8 +31,8 @@ public class Rendition extends BaseEntity {
 
   @Setter private String error;
 
-  public Rendition(Video vide, VideoResolution resolution) {
-    this.video = vide;
+  public Rendition(Video video, VideoResolution resolution) {
+    this.video = video;
     this.resolution = resolution;
     this.name = generateName();
   }

@@ -11,12 +11,12 @@ import tools.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
-public class FFprobeVideoProcessorAdapter {
+public class FFProbeVideoAdapter {
 
   private final ObjectMapper objectMapper;
   private final FFprobeParser ffprobeParser;
 
-  public FFprobeVideoProcessorAdapter(ObjectMapper objectMapper, FFprobeParser ffprobeParser) {
+  public FFProbeVideoAdapter(ObjectMapper objectMapper, FFprobeParser ffprobeParser) {
     this.objectMapper = objectMapper;
     this.ffprobeParser = ffprobeParser;
   }
