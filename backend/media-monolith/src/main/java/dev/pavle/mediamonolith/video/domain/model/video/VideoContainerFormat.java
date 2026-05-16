@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import dev.pavle.mediamonolith.video.infrastructure.processing.VideoProcessingException;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 public enum VideoContainerFormat {
@@ -22,5 +23,9 @@ public enum VideoContainerFormat {
         .filter(format -> format.ffProbeName.equals(name))
         .findFirst()
         .orElseThrow(() -> new VideoProcessingException("Unsupported format: " + name));
+  }
+
+  public String getExtension() {
+    return extension;
   }
 }

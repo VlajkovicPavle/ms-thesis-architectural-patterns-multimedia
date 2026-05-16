@@ -10,7 +10,7 @@ import dev.pavle.mediamonolith.video.domain.model.video.VideoMetadata;
 import tools.jackson.databind.JsonNode;
 
 @Component
-public class FfprobeParser {
+public class FFprobeParser {
 
   public VideoMetadata parse(JsonNode root) {
     JsonNode videoStream =
