@@ -7,5 +7,6 @@ import dev.pavle.mediamonolith.video.domain.model.video.VideoResolution;
 public interface VideoProcessorPort {
   VideoMetadata extractMetadata(StoredFileRef ref);
 
-  StoredFileRef createRendition(StoredFileRef source, VideoResolution resolution, String outputFileName);
+  StoredFileRef createRendition(
+      StoredFileRef source, VideoResolution resolution, String outputFileName);
 }

@@ -29,7 +29,9 @@ public class Rendition extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private RenditionStatus status = RenditionStatus.PENDING;
 
-  @Setter private String error;
+  @Setter
+  @Column(columnDefinition = "TEXT")
+  private String error;
 
   public Rendition(Video video, VideoResolution resolution) {
     this.video = video;
@@ -38,6 +40,10 @@ public class Rendition extends BaseEntity {
   }
 
   private String generateName() {
-    return "%s-%s-rendition".formatted(video.getSysName(), this.resolution);
+    return "%s-%s-rendition.%s"
+        .formatted(
+            video.getSysName(),
+            this.resolution,
+            video.getMetadata().videoContainerFormat().getExtension());
   }
 }

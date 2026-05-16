@@ -30,9 +30,4 @@ public class RenditionService {
     renditions.forEach(video::addRendition);
     videoStoragePort.save(video);
   }
-
-  public void handleCreateRenditionEvent(CreateRenditionEvent createRenditionEvent) {
-    // TODO:
-    // Call scheduler
-  }
 }

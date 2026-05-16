@@ -11,7 +11,10 @@ import org.springframework.stereotype.Component;
 import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
 import dev.pavle.mediamonolith.video.domain.exception.RenditionJobAlreadyActiveException;
 import dev.pavle.mediamonolith.video.domain.exception.VideoNotFoundException;
+import dev.pavle.mediamonolith.video.domain.model.rendition.Rendition;
+import dev.pavle.mediamonolith.video.domain.model.rendition.RenditionStatus;
 import dev.pavle.mediamonolith.video.domain.model.shared.StoredFileRef;
+import dev.pavle.mediamonolith.video.domain.model.video.Video;
 import dev.pavle.mediamonolith.video.domain.port.FileStoragePort;
 import dev.pavle.mediamonolith.video.domain.port.RenditionStoragePort;
 import dev.pavle.mediamonolith.video.domain.port.VideoProcessorPort;
@@ -51,7 +54,68 @@ public class RenditionJobHandler {
     executorService.submit(() -> executeRenditionJob(event));
   }
 
-  // TODO: Implement the rendition transcoding job body
   private void executeRenditionJob(CreateRenditionEvent event) {
+    Rendition rendition = null;
+    try {
+      Video video =
+          videoStoragePort
+              .findById(event.videoId())
+              .orElseThrow(() -> new VideoNotFoundException(event.videoId()));
+      rendition =
+          renditionStoragePort
+              .findByVideoIdAndResolution(event.videoId(), event.resolution())
+              .orElseThrow(
+                  () ->
+                      new IllegalStateException(
+                          "Rendition not found for video %s and resolution %s"
+                              .formatted(event.videoId(), event.resolution())));
+      rendition.setStatus(RenditionStatus.RUNNING);
+      rendition = renditionStoragePort.save(rendition);
+      log.info(
+          "Rendition job RUNNING: videoId={}, resolution={}", event.videoId(), event.resolution());
+      StoredFileRef persistedFile = transcodeAndPersist(video, rendition, event);
+      rendition.setStoredFileRef(persistedFile);
+      rendition.setStatus(RenditionStatus.FINISHED);
+      renditionStoragePort.save(rendition);
+      log.info(
+          "Rendition job FINISHED: videoId={}, resolution={}",
+          event.videoId(),
+          event.resolution());
+
+    } catch (Exception e) {
+      handleJobError(rendition, event, e);
+    } finally {
+      activeRenditions.remove(event);
+    }
+  }
+
+  private StoredFileRef transcodeAndPersist(
+      Video video, Rendition rendition, CreateRenditionEvent event) {
+    StoredFileRef source = new StoredFileRef(video.getSysPath());
+    StoredFileRef tmpFile =
+        videoProcessorPort.createRendition(source, event.resolution(), rendition.getName());
+    return fileStoragePort.persist(tmpFile, rendition.getName());
+  }
+
+  private void handleJobError(Rendition rendition, CreateRenditionEvent event, Exception e) {
+    log.error(
+        "Rendition job ERROR: videoId={}, resolution={}, error={}",
+        event.videoId(),
+        event.resolution(),
+        e.getMessage(),
+        e);
+    if (rendition != null) {
+      rendition.setStatus(RenditionStatus.ERROR);
+      rendition.setError(e.getMessage());
+      try {
+        renditionStoragePort.save(rendition);
+      } catch (Exception saveEx) {
+        log.error(
+            "Failed to persist ERROR status for rendition: videoId={}, resolution={}",
+            event.videoId(),
+            event.resolution(),
+            saveEx);
+      }
+    }
   }
 }
