@@ -4,6 +4,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import jakarta.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -95,6 +98,21 @@ public class RenditionJobHandler {
     StoredFileRef tmpFile =
         videoProcessorPort.createRendition(source, event.resolution(), rendition.getName());
     return fileStoragePort.persist(tmpFile, rendition.getName());
+  }
+
+  @PreDestroy
+  public void shutdown() {
+    log.info("Shutting down rendition job handler, awaiting in-flight jobs...");
+    executorService.shutdown();
+    try {
+      if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+        executorService.shutdownNow();
+        log.warn("Forced shutdown of rendition job handler after timeout");
+      }
+    } catch (InterruptedException e) {
+      executorService.shutdownNow();
+      Thread.currentThread().interrupt();
+    }
   }
 
   private void handleJobError(Rendition rendition, CreateRenditionEvent event, Exception e) {

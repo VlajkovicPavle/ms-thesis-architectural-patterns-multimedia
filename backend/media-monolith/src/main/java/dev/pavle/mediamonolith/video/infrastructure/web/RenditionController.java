@@ -1,12 +1,13 @@
 package dev.pavle.mediamonolith.video.infrastructure.web;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.web.bind.annotation.*;
 
 import dev.pavle.mediamonolith.video.application.RenditionService;
 import dev.pavle.mediamonolith.video.infrastructure.web.dto.CreateRenditionsRequest;
+import dev.pavle.mediamonolith.video.infrastructure.web.dto.RenditionResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,5 +27,10 @@ public class RenditionController {
     log.info("Rendition request received, {}", createRenditionsRequest);
     renditionService.createRendition(
         createRenditionsRequest.videoId(), createRenditionsRequest.resolutions());
+  }
+
+  @GetMapping("/video/{videoId}")
+  public List<RenditionResponse> getRenditionsForVideo(@PathVariable UUID videoId) {
+    return renditionService.getRenditionsForVideo(videoId);
   }
 }

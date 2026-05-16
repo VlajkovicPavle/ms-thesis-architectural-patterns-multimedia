@@ -1,5 +1,6 @@
 package dev.pavle.mediamonolith.video.infrastructure.persistence;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,5 +28,10 @@ public class RenditionRepositoryAdapter implements RenditionStoragePort {
   public Optional<Rendition> findByVideoIdAndResolution(
       UUID videoId, VideoResolution resolution) {
     return repository.findByVideoIdAndResolution(videoId, resolution);
+  }
+
+  @Override
+  public List<Rendition> findAllByVideoId(UUID videoId) {
+    return repository.findAllByVideoId(videoId);
   }
 }
