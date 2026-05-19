@@ -26,7 +26,8 @@ public class FFMpegProcessingAdapter implements VideoProcessorPort {
   }
 
   @Override
-  public StoredFileRef createRendition(StoredFileRef source, VideoResolution resolution,  String outputFileName ) {
-    return ffmpegTranscoderAdapter.transcode(source, resolution,outputFileName);
+  public StoredFileRef createRendition(
+      StoredFileRef source, VideoResolution resolution, String outputFileName) {
+    return ffmpegTranscoderAdapter.transcode(source, resolution, outputFileName);
   }
 }
