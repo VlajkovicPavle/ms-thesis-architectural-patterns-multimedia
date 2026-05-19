@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import dev.pavle.mediamonolith.video.infrastructure.processing.VideoProcessingException;
 import lombok.Getter;
-import lombok.ToString;
 
 @Getter
 public enum VideoContainerFormat {

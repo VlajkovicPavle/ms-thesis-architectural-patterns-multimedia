@@ -6,8 +6,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import jakarta.annotation.PreDestroy;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +20,7 @@ import dev.pavle.mediamonolith.video.domain.port.FileStoragePort;
 import dev.pavle.mediamonolith.video.domain.port.RenditionStoragePort;
 import dev.pavle.mediamonolith.video.domain.port.VideoProcessorPort;
 import dev.pavle.mediamonolith.video.domain.port.VideoStoragePort;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -81,9 +80,7 @@ public class RenditionJobHandler {
       rendition.setStatus(RenditionStatus.FINISHED);
       renditionStoragePort.save(rendition);
       log.info(
-          "Rendition job FINISHED: videoId={}, resolution={}",
-          event.videoId(),
-          event.resolution());
+          "Rendition job FINISHED: videoId={}, resolution={}", event.videoId(), event.resolution());
 
     } catch (Exception e) {
       handleJobError(rendition, event, e);
