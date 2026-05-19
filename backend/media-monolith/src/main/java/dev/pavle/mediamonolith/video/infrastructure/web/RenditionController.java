@@ -3,11 +3,11 @@ package dev.pavle.mediamonolith.video.infrastructure.web;
 import java.util.List;
 import java.util.UUID;
 
+import dev.pavle.mediamonolith.video.infrastructure.web.dto.RenditionResponse;
 import org.springframework.web.bind.annotation.*;
 
 import dev.pavle.mediamonolith.video.application.RenditionService;
 import dev.pavle.mediamonolith.video.infrastructure.web.dto.CreateRenditionsRequest;
-import dev.pavle.mediamonolith.video.infrastructure.web.dto.RenditionResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
