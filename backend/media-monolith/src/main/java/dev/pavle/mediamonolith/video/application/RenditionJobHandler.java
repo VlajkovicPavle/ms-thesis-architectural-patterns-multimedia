@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
+import dev.pavle.mediamonolith.video.domain.event.RenditionCompletedEvent;
+import dev.pavle.mediamonolith.video.domain.event.RenditionFailedEvent;
 import dev.pavle.mediamonolith.video.domain.exception.RenditionJobAlreadyActiveException;
 import dev.pavle.mediamonolith.video.domain.exception.VideoNotFoundException;
 import dev.pavle.mediamonolith.video.domain.model.rendition.Rendition;
@@ -17,6 +19,7 @@ import dev.pavle.mediamonolith.video.domain.model.rendition.RenditionStatus;
 import dev.pavle.mediamonolith.video.domain.model.shared.StoredFileRef;
 import dev.pavle.mediamonolith.video.domain.model.video.Video;
 import dev.pavle.mediamonolith.video.domain.port.FileStoragePort;
+import dev.pavle.mediamonolith.video.domain.port.RenditionEventPublisherPort;
 import dev.pavle.mediamonolith.video.domain.port.RenditionStoragePort;
 import dev.pavle.mediamonolith.video.domain.port.VideoProcessorPort;
 import dev.pavle.mediamonolith.video.domain.port.VideoStoragePort;
@@ -34,18 +37,21 @@ public class RenditionJobHandler {
   private final RenditionStoragePort renditionStoragePort;
   private final VideoProcessorPort videoProcessorPort;
   private final FileStoragePort fileStoragePort;
+  private final RenditionEventPublisherPort renditionEventPublisherPort;
 
   public RenditionJobHandler(
       @Value("${rendition.pool-size}") int poolSize,
       VideoStoragePort videoStoragePort,
       RenditionStoragePort renditionStoragePort,
       VideoProcessorPort videoProcessorPort,
-      FileStoragePort fileStoragePort) {
+      FileStoragePort fileStoragePort,
+      RenditionEventPublisherPort renditionEventPublisherPort) {
     this.executorService = Executors.newFixedThreadPool(poolSize);
     this.videoStoragePort = videoStoragePort;
     this.renditionStoragePort = renditionStoragePort;
     this.videoProcessorPort = videoProcessorPort;
     this.fileStoragePort = fileStoragePort;
+    this.renditionEventPublisherPort = renditionEventPublisherPort;
   }
 
   public void dispatchCreateRenditionJob(CreateRenditionEvent event) {
@@ -78,9 +84,11 @@ public class RenditionJobHandler {
       StoredFileRef persistedFile = transcodeAndPersist(video, rendition, event);
       rendition.setStoredFileRef(persistedFile);
       rendition.setStatus(RenditionStatus.FINISHED);
-      renditionStoragePort.save(rendition);
+      rendition = renditionStoragePort.save(rendition);
       log.info(
           "Rendition job FINISHED: videoId={}, resolution={}", event.videoId(), event.resolution());
+      renditionEventPublisherPort.publishRenditionCompleted(
+          new RenditionCompletedEvent(event.videoId(), rendition.getId(), event.resolution()));
 
     } catch (Exception e) {
       handleJobError(rendition, event, e);
@@ -132,5 +140,11 @@ public class RenditionJobHandler {
             saveEx);
       }
     }
+    renditionEventPublisherPort.publishRenditionFailed(
+        new RenditionFailedEvent(
+            event.videoId(),
+            rendition != null ? rendition.getId() : null,
+            event.resolution(),
+            e.getMessage()));
   }
 }
