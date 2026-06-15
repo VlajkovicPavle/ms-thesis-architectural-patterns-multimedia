@@ -32,7 +32,7 @@ public class RenditionNotificationListener {
   public void onRenditionFailed(RenditionFailedEvent event) {
     try {
       notificationService.notifyRenditionFailed(
-          event.videoId(), event.renditionId(), event.resolution().name(), event.error());
+          event.videoId(), event.renditionId(), event.resolution().name());
     } catch (Exception e) {
       log.error("Failed to record failure notification for {}", event, e);
     }

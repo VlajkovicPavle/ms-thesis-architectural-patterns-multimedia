@@ -30,9 +30,8 @@ public class NotificationService {
     record(new Notification(videoId, renditionId, NotificationType.TASK_COMPLETED, message));
   }
 
-  public void notifyRenditionFailed(
-      UUID videoId, UUID renditionId, String resolution, String error) {
-    String message = "%s rendition failed: %s".formatted(resolution, error);
+  public void notifyRenditionFailed(UUID videoId, UUID renditionId, String resolution) {
+    String message = "%s rendition failed".formatted(resolution);
     record(new Notification(videoId, renditionId, NotificationType.TASK_FAILED, message));
   }
 
