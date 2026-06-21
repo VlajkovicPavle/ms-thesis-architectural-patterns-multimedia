@@ -1,5 +1,6 @@
 package dev.pavle.mediamonolith.video.infrastructure.persistence;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,6 +21,11 @@ public class VideoRepositoryAdapter implements VideoStoragePort {
   @Override
   public Video save(Video video) {
     return repository.save(video);
+  }
+
+  @Override
+  public List<Video> findAllNewestFirst() {
+    return repository.findAllByOrderByCreatedAtDesc();
   }
 
   @Override

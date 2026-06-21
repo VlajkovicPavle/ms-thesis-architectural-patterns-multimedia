@@ -1,12 +1,14 @@
 package dev.pavle.mediamonolith.video.application;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import dev.pavle.mediamonolith.video.application.model.view.VideoView;
+import dev.pavle.mediamonolith.video.domain.exception.VideoNotFoundException;
 import dev.pavle.mediamonolith.video.domain.model.shared.StoredFileRef;
 import dev.pavle.mediamonolith.video.domain.model.video.Video;
 import dev.pavle.mediamonolith.video.domain.model.video.VideoMetadata;
@@ -39,6 +41,17 @@ public class VideoService {
     Video saved = videoStoragePort.save(createdVideo);
     log.info("Created video {}", saved);
     return VideoView.from(saved);
+  }
+
+  public List<VideoView> list() {
+    return videoStoragePort.findAllNewestFirst().stream().map(VideoView::from).toList();
+  }
+
+  public VideoView get(UUID videoId) {
+    return videoStoragePort
+        .findById(videoId)
+        .map(VideoView::from)
+        .orElseThrow(() -> new VideoNotFoundException(videoId));
   }
 
   private StoredFileRef createTmpVideo(InputStream content, String originalName) {
