@@ -25,6 +25,11 @@ public class RenditionRepositoryAdapter implements RenditionStoragePort {
   }
 
   @Override
+  public Optional<Rendition> findById(UUID renditionId) {
+    return repository.findById(renditionId);
+  }
+
+  @Override
   public Optional<Rendition> findByVideoIdAndResolution(UUID videoId, VideoResolution resolution) {
     return repository.findByVideoIdAndResolution(videoId, resolution);
   }

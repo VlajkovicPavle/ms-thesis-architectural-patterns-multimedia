@@ -50,6 +50,15 @@ public class LocalFileStorageAdapter implements FileStoragePort {
   }
 
   @Override
+  public InputStream open(StoredFileRef ref) {
+    try {
+      return Files.newInputStream(Paths.get(ref.identifier()));
+    } catch (IOException e) {
+      throw new FileStorageException("Failed to open file: " + ref.identifier(), e);
+    }
+  }
+
+  @Override
   public void delete(StoredFileRef ref) {
     try {
       Files.deleteIfExists(Paths.get(ref.identifier()));

@@ -9,5 +9,7 @@ public interface FileStoragePort {
 
   StoredFileRef persist(StoredFileRef temp, String fileName);
 
+  InputStream open(StoredFileRef ref);
+
   void delete(StoredFileRef ref);
 }

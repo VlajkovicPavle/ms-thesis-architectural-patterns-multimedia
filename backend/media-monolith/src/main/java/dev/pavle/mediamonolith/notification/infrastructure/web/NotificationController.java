@@ -13,7 +13,7 @@ import dev.pavle.mediamonolith.notification.infrastructure.sse.SseNotificationSt
 import dev.pavle.mediamonolith.notification.infrastructure.web.dto.NotificationResponse;
 
 @RestController
-@RequestMapping("v1/notifications")
+@RequestMapping("v1/notification")
 public class NotificationController {
 
   private final NotificationService notificationService;

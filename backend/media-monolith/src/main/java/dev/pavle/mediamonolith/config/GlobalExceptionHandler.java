@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import dev.pavle.mediamonolith.video.domain.exception.DuplicateRenditionException;
 import dev.pavle.mediamonolith.video.domain.exception.InvalidRenditionResolutionException;
 import dev.pavle.mediamonolith.video.domain.exception.RenditionJobAlreadyActiveException;
+import dev.pavle.mediamonolith.video.domain.exception.RenditionNotFinishedException;
+import dev.pavle.mediamonolith.video.domain.exception.RenditionNotFoundException;
 import dev.pavle.mediamonolith.video.domain.exception.VideoNotFoundException;
 import dev.pavle.mediamonolith.video.infrastructure.filestorage.FileStorageException;
 import dev.pavle.mediamonolith.video.infrastructure.processing.VideoProcessingException;
@@ -45,6 +47,20 @@ public class GlobalExceptionHandler {
       RenditionJobAlreadyActiveException ex) {
     ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     problem.setTitle("Rendition Job Already Active");
+    return problem;
+  }
+
+  @ExceptionHandler(RenditionNotFoundException.class)
+  public ProblemDetail handleRenditionNotFoundException(RenditionNotFoundException ex) {
+    ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+    problem.setTitle("Rendition Not Found");
+    return problem;
+  }
+
+  @ExceptionHandler(RenditionNotFinishedException.class)
+  public ProblemDetail handleRenditionNotFinishedException(RenditionNotFinishedException ex) {
+    ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+    problem.setTitle("Rendition Not Finished");
     return problem;
   }
 
