@@ -11,11 +11,6 @@ import dev.pavle.mediamonolith.notification.domain.port.NotificationStreamPort;
 import dev.pavle.mediamonolith.notification.infrastructure.web.dto.NotificationResponse;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Holds the set of live SSE subscribers and fans a notification out to all of them. Pushes run on
- * the publishing worker thread, so sends are defensive: a dead/slow client is evicted rather than
- * allowed to block. A single global stream is sufficient (single-user thesis dashboard, no auth).
- */
 @Component
 @Slf4j
 public class SseNotificationStreamAdapter implements NotificationStreamPort {
