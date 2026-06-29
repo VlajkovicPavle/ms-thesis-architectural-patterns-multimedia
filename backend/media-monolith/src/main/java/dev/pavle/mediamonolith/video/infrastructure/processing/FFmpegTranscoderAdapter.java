@@ -52,7 +52,7 @@ public class FFmpegTranscoderAdapter {
         "-vf",
         "scale=-2:" + targetHeight,
         "-c:v",
-        "libopenh264",
+        "libx264",
         "-c:a",
         "aac",
         "-b:a",
