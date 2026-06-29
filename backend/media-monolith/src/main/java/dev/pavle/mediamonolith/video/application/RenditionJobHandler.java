@@ -38,6 +38,7 @@ public class RenditionJobHandler {
   private final VideoProcessorPort videoProcessorPort;
   private final FileStoragePort fileStoragePort;
   private final RenditionEventPublisherPort renditionEventPublisherPort;
+  private final RenditionMetrics renditionMetrics;
 
   public RenditionJobHandler(
       @Value("${rendition.pool-size}") int poolSize,
@@ -45,13 +46,17 @@ public class RenditionJobHandler {
       RenditionStoragePort renditionStoragePort,
       VideoProcessorPort videoProcessorPort,
       FileStoragePort fileStoragePort,
-      RenditionEventPublisherPort renditionEventPublisherPort) {
+      RenditionEventPublisherPort renditionEventPublisherPort,
+      RenditionMetrics renditionMetrics) {
     this.executorService = Executors.newFixedThreadPool(poolSize);
     this.videoStoragePort = videoStoragePort;
     this.renditionStoragePort = renditionStoragePort;
     this.videoProcessorPort = videoProcessorPort;
     this.fileStoragePort = fileStoragePort;
     this.renditionEventPublisherPort = renditionEventPublisherPort;
+    this.renditionMetrics = renditionMetrics;
+
+    renditionMetrics.registerActiveJobsGauge(activeRenditions::size);
   }
 
   public void dispatchCreateRenditionJob(CreateRenditionEvent event) {
@@ -89,6 +94,7 @@ public class RenditionJobHandler {
           "Rendition job FINISHED: videoId={}, resolution={}", event.videoId(), event.resolution());
       renditionEventPublisherPort.publishRenditionCompleted(
           new RenditionCompletedEvent(event.videoId(), rendition.getId(), event.resolution()));
+      renditionMetrics.recordPipelineSuccess(rendition.getCreatedAt());
 
     } catch (Exception e) {
       handleJobError(rendition, event, e);
@@ -139,6 +145,7 @@ public class RenditionJobHandler {
             event.resolution(),
             saveEx);
       }
+      renditionMetrics.recordPipelineFailure(rendition.getCreatedAt());
     }
     renditionEventPublisherPort.publishRenditionFailed(
         new RenditionFailedEvent(
