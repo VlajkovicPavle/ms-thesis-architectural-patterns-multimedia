@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 import dev.pavle.mediamonolith.video.domain.model.rendition.Rendition;
+import dev.pavle.mediamonolith.video.domain.model.rendition.RenditionStatus;
 import dev.pavle.mediamonolith.video.domain.model.video.VideoResolution;
 import dev.pavle.mediamonolith.video.domain.port.RenditionStoragePort;
 
@@ -37,5 +38,10 @@ public class RenditionRepositoryAdapter implements RenditionStoragePort {
   @Override
   public List<Rendition> findAllByVideoId(UUID videoId) {
     return repository.findAllByVideoId(videoId);
+  }
+
+  @Override
+  public long countByStatus(RenditionStatus status) {
+    return repository.countByStatus(status);
   }
 }

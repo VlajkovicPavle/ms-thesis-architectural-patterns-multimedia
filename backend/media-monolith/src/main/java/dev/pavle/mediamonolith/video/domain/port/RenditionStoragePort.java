@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import dev.pavle.mediamonolith.video.domain.model.rendition.Rendition;
+import dev.pavle.mediamonolith.video.domain.model.rendition.RenditionStatus;
 import dev.pavle.mediamonolith.video.domain.model.video.VideoResolution;
 
 public interface RenditionStoragePort {
@@ -15,4 +16,6 @@ public interface RenditionStoragePort {
   Optional<Rendition> findByVideoIdAndResolution(UUID videoId, VideoResolution resolution);
 
   List<Rendition> findAllByVideoId(UUID videoId);
+
+  long countByStatus(RenditionStatus status);
 }
