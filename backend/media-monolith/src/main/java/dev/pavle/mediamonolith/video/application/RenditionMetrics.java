@@ -1,5 +1,6 @@
 package dev.pavle.mediamonolith.video.application;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.function.Supplier;
 
@@ -30,9 +31,13 @@ public class RenditionMetrics {
     Gauge.builder("rendition.active.jobs", activeJobCount).register(meterRegistry);
   }
 
-  public void recordPipelineSuccess(Instant startedAt) {}
+  public void recordPipelineSuccess(Instant startedAt) {
+    this.pipelineSuccessTimer.record(calculateElapsedDuration(startedAt));
+  }
 
-  public void recordPipelineFailure(Instant startedAt) {}
+  public void recordPipelineFailure(Instant startedAt) {
+    this.pipelineErrorTimer.record(calculateElapsedDuration(startedAt));
+  }
 
   private void buildGuageMetrics() {
     Gauge.builder(
@@ -53,5 +58,9 @@ public class RenditionMetrics {
             .tag("status", "error")
             .publishPercentileHistogram()
             .register(meterRegistry);
+  }
+
+  private Duration calculateElapsedDuration(Instant start) {
+    return Duration.between(start, Instant.now());
   }
 }
