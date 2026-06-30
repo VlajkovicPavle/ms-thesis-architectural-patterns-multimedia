@@ -3,6 +3,7 @@ package dev.pavle.mediamonolith.video.infrastructure.event;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import dev.pavle.mediamonolith.video.domain.event.AllRenditionsCompletedEvent;
 import dev.pavle.mediamonolith.video.domain.event.RenditionCompletedEvent;
 import dev.pavle.mediamonolith.video.domain.event.RenditionFailedEvent;
 import dev.pavle.mediamonolith.video.domain.port.RenditionEventPublisherPort;
@@ -23,6 +24,11 @@ public class SpringRenditionEventPublisher implements RenditionEventPublisherPor
 
   @Override
   public void publishRenditionFailed(RenditionFailedEvent event) {
+    applicationEventPublisher.publishEvent(event);
+  }
+
+  @Override
+  public void publishAllRenditionsCompleted(AllRenditionsCompletedEvent event) {
     applicationEventPublisher.publishEvent(event);
   }
 }

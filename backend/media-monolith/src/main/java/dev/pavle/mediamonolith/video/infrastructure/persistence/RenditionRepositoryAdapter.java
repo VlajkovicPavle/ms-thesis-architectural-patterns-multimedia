@@ -1,5 +1,6 @@
 package dev.pavle.mediamonolith.video.infrastructure.persistence;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,5 +44,10 @@ public class RenditionRepositoryAdapter implements RenditionStoragePort {
   @Override
   public long countByStatus(RenditionStatus status) {
     return repository.countByStatus(status);
+  }
+
+  @Override
+  public long countByVideoIdAndStatusIn(UUID videoId, Collection<RenditionStatus> statuses) {
+    return repository.countByVideoIdAndStatusIn(videoId, statuses);
   }
 }

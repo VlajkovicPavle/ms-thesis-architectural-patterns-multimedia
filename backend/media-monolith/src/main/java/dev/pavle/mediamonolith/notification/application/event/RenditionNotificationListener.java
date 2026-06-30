@@ -4,6 +4,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import dev.pavle.mediamonolith.notification.application.NotificationService;
+import dev.pavle.mediamonolith.video.domain.event.AllRenditionsCompletedEvent;
 import dev.pavle.mediamonolith.video.domain.event.RenditionCompletedEvent;
 import dev.pavle.mediamonolith.video.domain.event.RenditionFailedEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,15 @@ public class RenditionNotificationListener {
           event.videoId(), event.renditionId(), event.resolution().name());
     } catch (Exception e) {
       log.error("Failed to record failure notification for {}", event, e);
+    }
+  }
+
+  @EventListener
+  public void onAllRenditionsCompleted(AllRenditionsCompletedEvent event) {
+    try {
+      notificationService.notifyAllRenditionsCompleted(event.videoId());
+    } catch (Exception e) {
+      log.error("Failed to record all-completed notification for {}", event, e);
     }
   }
 }
