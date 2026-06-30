@@ -1,5 +1,6 @@
 package dev.pavle.mediamonolith.video.infrastructure.persistence;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,4 +17,6 @@ public interface RenditionRepository extends JpaRepository<Rendition, UUID> {
   List<Rendition> findAllByVideoId(UUID videoId);
 
   long countByStatus(RenditionStatus status);
+
+  long countByVideoIdAndStatusIn(UUID videoId, Collection<RenditionStatus> statuses);
 }

@@ -1,5 +1,6 @@
 package dev.pavle.mediamonolith.video.domain.port;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,4 +19,6 @@ public interface RenditionStoragePort {
   List<Rendition> findAllByVideoId(UUID videoId);
 
   long countByStatus(RenditionStatus status);
+
+  long countByVideoIdAndStatusIn(UUID videoId, Collection<RenditionStatus> statuses);
 }

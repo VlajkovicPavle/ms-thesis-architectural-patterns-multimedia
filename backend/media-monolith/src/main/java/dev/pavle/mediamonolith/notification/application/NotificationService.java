@@ -35,6 +35,11 @@ public class NotificationService {
     record(new Notification(videoId, renditionId, NotificationType.TASK_FAILED, message));
   }
 
+  public void notifyAllRenditionsCompleted(UUID videoId) {
+    String message = "All renditions are ready";
+    record(new Notification(videoId, null, NotificationType.ALL_COMPLETED, message));
+  }
+
   public List<Notification> list() {
     return notificationStoragePort.findAllNewestFirst();
   }

@@ -1,6 +1,8 @@
 package dev.pavle.mediamonolith.video.application;
 
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -9,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import dev.pavle.mediamonolith.video.domain.event.AllRenditionsCompletedEvent;
 import dev.pavle.mediamonolith.video.domain.event.CreateRenditionEvent;
 import dev.pavle.mediamonolith.video.domain.event.RenditionCompletedEvent;
 import dev.pavle.mediamonolith.video.domain.event.RenditionFailedEvent;
@@ -95,11 +98,22 @@ public class RenditionJobHandler {
       renditionEventPublisherPort.publishRenditionCompleted(
           new RenditionCompletedEvent(event.videoId(), rendition.getId(), event.resolution()));
       renditionMetrics.recordPipelineSuccess(rendition.getCreatedAt());
+      publishAllRenditionsCompletedIfReady(event.videoId());
 
     } catch (Exception e) {
       handleJobError(rendition, event, e);
     } finally {
       activeRenditions.remove(event);
+    }
+  }
+
+  private void publishAllRenditionsCompletedIfReady(UUID videoId) {
+    long stillOutstanding =
+        renditionStoragePort.countByVideoIdAndStatusIn(
+            videoId, List.of(RenditionStatus.PENDING, RenditionStatus.RUNNING));
+    if (stillOutstanding == 0) {
+      renditionEventPublisherPort.publishAllRenditionsCompleted(
+          new AllRenditionsCompletedEvent(videoId));
     }
   }
 
