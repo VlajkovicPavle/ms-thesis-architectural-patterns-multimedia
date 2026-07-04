@@ -5,12 +5,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import dev.pavle.mediamodular.shared.BaseAggregateRoot;
 import dev.pavle.mediamodular.video.domain.event.CreateRenditionEvent;
 import dev.pavle.mediamodular.video.domain.exception.DuplicateRenditionException;
 import dev.pavle.mediamodular.video.domain.exception.InvalidRenditionResolutionException;
 import dev.pavle.mediamodular.video.domain.model.rendition.Rendition;
 import dev.pavle.mediamodular.video.domain.model.rendition.RenditionStatus;
-import dev.pavle.mediamodular.video.domain.model.shared.BaseAggregateRoot;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;

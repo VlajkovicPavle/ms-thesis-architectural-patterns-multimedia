@@ -1,6 +1,6 @@
 package dev.pavle.mediamodular.video.domain.model.rendition;
 
-import dev.pavle.mediamodular.video.domain.model.shared.BaseEntity;
+import dev.pavle.mediamodular.shared.BaseEntity;
 import dev.pavle.mediamodular.video.domain.model.shared.StoredFileRef;
 import dev.pavle.mediamodular.video.domain.model.video.Video;
 import dev.pavle.mediamodular.video.domain.model.video.VideoResolution;

@@ -1,17 +1,14 @@
-package dev.pavle.mediamodular.video.domain.model.shared;
+package dev.pavle.mediamodular.shared;
 
 import java.time.Instant;
 import java.util.UUID;
-
-import org.springframework.data.domain.AbstractAggregateRoot;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 
 @MappedSuperclass
 @Getter
-public abstract class BaseAggregateRoot<A extends BaseAggregateRoot<A>>
-    extends AbstractAggregateRoot<A> {
+public abstract class BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;

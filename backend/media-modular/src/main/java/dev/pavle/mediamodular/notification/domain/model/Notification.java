@@ -2,7 +2,7 @@ package dev.pavle.mediamodular.notification.domain.model;
 
 import java.util.UUID;
 
-import dev.pavle.mediamodular.video.domain.model.shared.BaseAggregateRoot;
+import dev.pavle.mediamodular.shared.BaseAggregateRoot;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
