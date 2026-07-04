@@ -11,10 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import dev.pavle.mediamodular.video.domain.event.AllRenditionsCompletedEvent;
 import dev.pavle.mediamodular.video.domain.event.CreateRenditionEvent;
-import dev.pavle.mediamodular.video.domain.event.RenditionCompletedEvent;
-import dev.pavle.mediamodular.video.domain.event.RenditionFailedEvent;
 import dev.pavle.mediamodular.video.domain.exception.RenditionJobAlreadyActiveException;
 import dev.pavle.mediamodular.video.domain.exception.VideoNotFoundException;
 import dev.pavle.mediamodular.video.domain.model.rendition.Rendition;
@@ -26,6 +23,9 @@ import dev.pavle.mediamodular.video.domain.port.RenditionEventPublisherPort;
 import dev.pavle.mediamodular.video.domain.port.RenditionStoragePort;
 import dev.pavle.mediamodular.video.domain.port.VideoProcessorPort;
 import dev.pavle.mediamodular.video.domain.port.VideoStoragePort;
+import dev.pavle.mediamodular.video.published.AllRenditionsCompletedEvent;
+import dev.pavle.mediamodular.video.published.RenditionCompletedEvent;
+import dev.pavle.mediamodular.video.published.RenditionFailedEvent;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 
@@ -96,7 +96,8 @@ public class RenditionJobHandler {
       log.info(
           "Rendition job FINISHED: videoId={}, resolution={}", event.videoId(), event.resolution());
       renditionEventPublisherPort.publishRenditionCompleted(
-          new RenditionCompletedEvent(event.videoId(), rendition.getId(), event.resolution()));
+          new RenditionCompletedEvent(
+              event.videoId(), rendition.getId(), event.resolution().name()));
       renditionMetrics.recordPipelineSuccess(rendition.getCreatedAt());
       publishAllRenditionsCompletedIfReady(event.videoId());
 
@@ -165,7 +166,7 @@ public class RenditionJobHandler {
         new RenditionFailedEvent(
             event.videoId(),
             rendition != null ? rendition.getId() : null,
-            event.resolution(),
+            event.resolution().name(),
             e.getMessage()));
   }
 }

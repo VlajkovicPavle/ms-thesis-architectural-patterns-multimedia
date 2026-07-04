@@ -3,10 +3,10 @@ package dev.pavle.mediamodular.video.infrastructure.event;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import dev.pavle.mediamodular.video.domain.event.AllRenditionsCompletedEvent;
-import dev.pavle.mediamodular.video.domain.event.RenditionCompletedEvent;
-import dev.pavle.mediamodular.video.domain.event.RenditionFailedEvent;
 import dev.pavle.mediamodular.video.domain.port.RenditionEventPublisherPort;
+import dev.pavle.mediamodular.video.published.AllRenditionsCompletedEvent;
+import dev.pavle.mediamodular.video.published.RenditionCompletedEvent;
+import dev.pavle.mediamodular.video.published.RenditionFailedEvent;
 
 @Component
 public class SpringRenditionEventPublisher implements RenditionEventPublisherPort {

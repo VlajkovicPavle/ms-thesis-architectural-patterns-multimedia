@@ -1,4 +1,4 @@
-package dev.pavle.mediamodular.video.domain.event;
+package dev.pavle.mediamodular.video.published;
 
 import java.time.Instant;
 import java.util.UUID;

@@ -1,8 +1,8 @@
 package dev.pavle.mediamodular.video.domain.port;
 
-import dev.pavle.mediamodular.video.domain.event.AllRenditionsCompletedEvent;
-import dev.pavle.mediamodular.video.domain.event.RenditionCompletedEvent;
-import dev.pavle.mediamodular.video.domain.event.RenditionFailedEvent;
+import dev.pavle.mediamodular.video.published.AllRenditionsCompletedEvent;
+import dev.pavle.mediamodular.video.published.RenditionCompletedEvent;
+import dev.pavle.mediamodular.video.published.RenditionFailedEvent;
 
 public interface RenditionEventPublisherPort {
   void publishRenditionCompleted(RenditionCompletedEvent event);

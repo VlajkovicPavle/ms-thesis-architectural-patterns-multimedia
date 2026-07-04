@@ -4,9 +4,9 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import dev.pavle.mediamodular.notification.application.NotificationService;
-import dev.pavle.mediamodular.video.domain.event.AllRenditionsCompletedEvent;
-import dev.pavle.mediamodular.video.domain.event.RenditionCompletedEvent;
-import dev.pavle.mediamodular.video.domain.event.RenditionFailedEvent;
+import dev.pavle.mediamodular.video.published.AllRenditionsCompletedEvent;
+import dev.pavle.mediamodular.video.published.RenditionCompletedEvent;
+import dev.pavle.mediamodular.video.published.RenditionFailedEvent;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -23,7 +23,7 @@ public class RenditionNotificationListener {
   public void onRenditionCompleted(RenditionCompletedEvent event) {
     try {
       notificationService.notifyRenditionCompleted(
-          event.videoId(), event.renditionId(), event.resolution().name());
+          event.videoId(), event.renditionId(), event.resolution());
     } catch (Exception e) {
       log.error("Failed to record completion notification for {}", event, e);
     }
@@ -33,7 +33,7 @@ public class RenditionNotificationListener {
   public void onRenditionFailed(RenditionFailedEvent event) {
     try {
       notificationService.notifyRenditionFailed(
-          event.videoId(), event.renditionId(), event.resolution().name());
+          event.videoId(), event.renditionId(), event.resolution());
     } catch (Exception e) {
       log.error("Failed to record failure notification for {}", event, e);
     }
