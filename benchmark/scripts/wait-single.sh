@@ -13,4 +13,4 @@ until curl -fsS "$BASE_URL/api/actuator/health" >/dev/null; do
   sleep 2
 done
 
-printf 'media-monolith is healthy at %s\n' "$BASE_URL"
+printf 'Benchmark target is healthy at %s\n' "$BASE_URL"
