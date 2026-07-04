@@ -1,4 +1,4 @@
-package dev.pavle.mediamodular.config;
+package dev.pavle.mediamodular.video.infrastructure.web;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class VideoExceptionHandler {
 
   @ExceptionHandler(VideoNotFoundException.class)
   public ProblemDetail handleVideoNotFoundException(VideoNotFoundException ex) {
