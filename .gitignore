@@ -26,6 +26,7 @@ benchmark/data/videos/*.mp4
 benchmark/results/*.duckdb
 benchmark/results/*.duckdb.wal
 benchmark/results/runs/
+benchmark/results/summary/
 benchmark/gatling/target/
 
 # LaTeX build artifacts

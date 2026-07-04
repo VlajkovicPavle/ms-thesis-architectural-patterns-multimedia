@@ -6,6 +6,11 @@ VARIANT="${BENCHMARK_VARIANT:-monolith}"
 TOPOLOGY="${BENCHMARK_TOPOLOGY:-single}"
 SCENARIO="${BENCHMARK_SCENARIO:-SmokeSimulation}"
 RESOURCE_PROFILE="${BENCHMARK_RESOURCE_PROFILE:-baseline}"
+LOAD_USERS="${BENCHMARK_LOAD_USERS:-12}"
+RAMP_SECONDS="${BENCHMARK_RAMP_SECONDS:-60}"
+POLL_ATTEMPTS="${BENCHMARK_POLL_ATTEMPTS:-180}"
+POLL_PAUSE_MILLIS="${BENCHMARK_POLL_PAUSE_MILLIS:-1000}"
+DOWNLOAD_RENDITION="${BENCHMARK_DOWNLOAD_RENDITION:-false}"
 APP_PORT="${BENCHMARK_APP_PORT:-${APP_PORT:-8080}}"
 POSTGRES_PORT="${BENCHMARK_POSTGRES_PORT:-${POSTGRES_PORT:-5433}}"
 PROMETHEUS_PORT="${BENCHMARK_PROMETHEUS_PORT:-${PROMETHEUS_PORT:-9090}}"
@@ -134,6 +139,11 @@ write_metadata() {
   "prometheusUrl": "$PROMETHEUS_URL",
   "videoFile": "$VIDEO_PATH",
   "renditions": "$RESOLUTIONS",
+  "loadUsers": "$LOAD_USERS",
+  "rampSeconds": "$RAMP_SECONDS",
+  "pollAttempts": "$POLL_ATTEMPTS",
+  "pollPauseMillis": "$POLL_PAUSE_MILLIS",
+  "downloadRendition": "$DOWNLOAD_RENDITION",
   "autoStack": "$AUTO_STACK",
   "ports": {
     "app": "$APP_PORT",
@@ -227,7 +237,7 @@ values (
   $RESOLUTIONS_SQL,
   'running'::benchmark_status,
   '$REPORT_PATH',
-  'Phase 3 vertical benchmark runner'
+  'Phase 5 benchmark runner'
 );
 SQL
 
@@ -239,7 +249,12 @@ set +e
   -Dgatling.resultsFolder="$RUN_DIR/gatling" \
   -DbaseUrl="$BASE_URL" \
   -DvideoFile="$VIDEO_PATH" \
-  -Drenditions="$RESOLUTIONS")
+  -Drenditions="$RESOLUTIONS" \
+  -DloadUsers="$LOAD_USERS" \
+  -DrampSeconds="$RAMP_SECONDS" \
+  -DpollAttempts="$POLL_ATTEMPTS" \
+  -DpollPauseMillis="$POLL_PAUSE_MILLIS" \
+  -DdownloadRendition="$DOWNLOAD_RENDITION")
 EXIT_CODE=$?
 set -e
 
