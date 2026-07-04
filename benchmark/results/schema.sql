@@ -25,6 +25,10 @@ create table if not exists benchmark_runs (
   run_id text primary key,
   variant architecture_variant not null,
   topology benchmark_topology not null,
+  resource_profile text,
+  app_cpus text,
+  app_memory text,
+  rendition_pool_size integer,
   scenario text not null,
   base_url text not null,
   video_file text not null,
@@ -36,3 +40,8 @@ create table if not exists benchmark_runs (
   report_path text,
   notes text
 );
+
+alter table benchmark_runs add column if not exists resource_profile text;
+alter table benchmark_runs add column if not exists app_cpus text;
+alter table benchmark_runs add column if not exists app_memory text;
+alter table benchmark_runs add column if not exists rendition_pool_size integer;

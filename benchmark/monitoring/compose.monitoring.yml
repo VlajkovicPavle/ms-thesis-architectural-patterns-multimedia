@@ -1,14 +1,14 @@
 services:
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.53.4
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     ports:
-      - "9090:9090"
+      - "${PROMETHEUS_PORT:-9090}:9090"
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
     privileged: true
     devices:
       - /dev/kmsg
@@ -19,10 +19,10 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
     ports:
-      - "8081:8080"
+      - "${CADVISOR_PORT:-8081}:8080"
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:11.6.0
     depends_on:
       - prometheus
     environment:
@@ -33,7 +33,7 @@ services:
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana_data:/var/lib/grafana
     ports:
-      - "3000:3000"
+      - "${GRAFANA_PORT:-3000}:3000"
 
 volumes:
   prometheus_data:
