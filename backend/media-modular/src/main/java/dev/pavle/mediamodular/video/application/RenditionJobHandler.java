@@ -1,0 +1,171 @@
+package dev.pavle.mediamodular.video.application;
+
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import dev.pavle.mediamodular.video.domain.event.AllRenditionsCompletedEvent;
+import dev.pavle.mediamodular.video.domain.event.CreateRenditionEvent;
+import dev.pavle.mediamodular.video.domain.event.RenditionCompletedEvent;
+import dev.pavle.mediamodular.video.domain.event.RenditionFailedEvent;
+import dev.pavle.mediamodular.video.domain.exception.RenditionJobAlreadyActiveException;
+import dev.pavle.mediamodular.video.domain.exception.VideoNotFoundException;
+import dev.pavle.mediamodular.video.domain.model.rendition.Rendition;
+import dev.pavle.mediamodular.video.domain.model.rendition.RenditionStatus;
+import dev.pavle.mediamodular.video.domain.model.shared.StoredFileRef;
+import dev.pavle.mediamodular.video.domain.model.video.Video;
+import dev.pavle.mediamodular.video.domain.port.FileStoragePort;
+import dev.pavle.mediamodular.video.domain.port.RenditionEventPublisherPort;
+import dev.pavle.mediamodular.video.domain.port.RenditionStoragePort;
+import dev.pavle.mediamodular.video.domain.port.VideoProcessorPort;
+import dev.pavle.mediamodular.video.domain.port.VideoStoragePort;
+import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
+
+@Component
+@Slf4j
+public class RenditionJobHandler {
+
+  private final ExecutorService executorService;
+  private final Set<CreateRenditionEvent> activeRenditions = ConcurrentHashMap.newKeySet();
+
+  private final VideoStoragePort videoStoragePort;
+  private final RenditionStoragePort renditionStoragePort;
+  private final VideoProcessorPort videoProcessorPort;
+  private final FileStoragePort fileStoragePort;
+  private final RenditionEventPublisherPort renditionEventPublisherPort;
+  private final RenditionMetrics renditionMetrics;
+
+  public RenditionJobHandler(
+      @Value("${rendition.pool-size}") int poolSize,
+      VideoStoragePort videoStoragePort,
+      RenditionStoragePort renditionStoragePort,
+      VideoProcessorPort videoProcessorPort,
+      FileStoragePort fileStoragePort,
+      RenditionEventPublisherPort renditionEventPublisherPort,
+      RenditionMetrics renditionMetrics) {
+    this.executorService = Executors.newFixedThreadPool(poolSize);
+    this.videoStoragePort = videoStoragePort;
+    this.renditionStoragePort = renditionStoragePort;
+    this.videoProcessorPort = videoProcessorPort;
+    this.fileStoragePort = fileStoragePort;
+    this.renditionEventPublisherPort = renditionEventPublisherPort;
+    this.renditionMetrics = renditionMetrics;
+
+    renditionMetrics.registerActiveJobsGauge(activeRenditions::size);
+  }
+
+  public void dispatchCreateRenditionJob(CreateRenditionEvent event) {
+    if (activeRenditions.contains(event)) {
+      throw new RenditionJobAlreadyActiveException(event.videoId(), event.resolution());
+    }
+    activeRenditions.add(event);
+    executorService.submit(() -> executeRenditionJob(event));
+  }
+
+  private void executeRenditionJob(CreateRenditionEvent event) {
+    Rendition rendition = null;
+    try {
+      Video video =
+          videoStoragePort
+              .findById(event.videoId())
+              .orElseThrow(() -> new VideoNotFoundException(event.videoId()));
+      rendition =
+          renditionStoragePort
+              .findByVideoIdAndResolution(event.videoId(), event.resolution())
+              .orElseThrow(
+                  () ->
+                      new IllegalStateException(
+                          "Rendition not found for video %s and resolution %s"
+                              .formatted(event.videoId(), event.resolution())));
+      rendition.setStatus(RenditionStatus.RUNNING);
+      rendition = renditionStoragePort.save(rendition);
+      log.info(
+          "Rendition job RUNNING: videoId={}, resolution={}", event.videoId(), event.resolution());
+      StoredFileRef persistedFile = transcodeAndPersist(video, rendition, event);
+      rendition.setStoredFileRef(persistedFile);
+      rendition.setStatus(RenditionStatus.FINISHED);
+      rendition = renditionStoragePort.save(rendition);
+      log.info(
+          "Rendition job FINISHED: videoId={}, resolution={}", event.videoId(), event.resolution());
+      renditionEventPublisherPort.publishRenditionCompleted(
+          new RenditionCompletedEvent(event.videoId(), rendition.getId(), event.resolution()));
+      renditionMetrics.recordPipelineSuccess(rendition.getCreatedAt());
+      publishAllRenditionsCompletedIfReady(event.videoId());
+
+    } catch (Exception e) {
+      handleJobError(rendition, event, e);
+    } finally {
+      activeRenditions.remove(event);
+    }
+  }
+
+  private void publishAllRenditionsCompletedIfReady(UUID videoId) {
+    long stillOutstanding =
+        renditionStoragePort.countByVideoIdAndStatusIn(
+            videoId, List.of(RenditionStatus.PENDING, RenditionStatus.RUNNING));
+    if (stillOutstanding == 0) {
+      renditionEventPublisherPort.publishAllRenditionsCompleted(
+          new AllRenditionsCompletedEvent(videoId));
+    }
+  }
+
+  private StoredFileRef transcodeAndPersist(
+      Video video, Rendition rendition, CreateRenditionEvent event) {
+    StoredFileRef source = new StoredFileRef(video.getSysPath());
+    StoredFileRef tmpFile =
+        videoProcessorPort.createRendition(source, event.resolution(), rendition.getName());
+    return fileStoragePort.persist(tmpFile, rendition.getName());
+  }
+
+  @PreDestroy
+  public void shutdown() {
+    log.info("Shutting down rendition job handler, awaiting in-flight jobs...");
+    executorService.shutdown();
+    try {
+      if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+        executorService.shutdownNow();
+        log.warn("Forced shutdown of rendition job handler after timeout");
+      }
+    } catch (InterruptedException e) {
+      executorService.shutdownNow();
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  private void handleJobError(Rendition rendition, CreateRenditionEvent event, Exception e) {
+    log.error(
+        "Rendition job ERROR: videoId={}, resolution={}, error={}",
+        event.videoId(),
+        event.resolution(),
+        e.getMessage(),
+        e);
+    if (rendition != null) {
+      rendition.setStatus(RenditionStatus.ERROR);
+      rendition.setError(e.getMessage());
+      try {
+        renditionStoragePort.save(rendition);
+      } catch (Exception saveEx) {
+        log.error(
+            "Failed to persist ERROR status for rendition: videoId={}, resolution={}",
+            event.videoId(),
+            event.resolution(),
+            saveEx);
+      }
+      renditionMetrics.recordPipelineFailure(rendition.getCreatedAt());
+    }
+    renditionEventPublisherPort.publishRenditionFailed(
+        new RenditionFailedEvent(
+            event.videoId(),
+            rendition != null ? rendition.getId() : null,
+            event.resolution(),
+            e.getMessage()));
+  }
+}
