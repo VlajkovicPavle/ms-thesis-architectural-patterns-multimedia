@@ -21,6 +21,13 @@ Thumbs.db
 
 *.log
 
+# Benchmark generated artifacts
+benchmark/data/videos/*.mp4
+benchmark/results/*.duckdb
+benchmark/results/*.duckdb.wal
+benchmark/results/runs/
+benchmark/gatling/target/
+
 # LaTeX build artifacts
 *.aux
 *.bbl
