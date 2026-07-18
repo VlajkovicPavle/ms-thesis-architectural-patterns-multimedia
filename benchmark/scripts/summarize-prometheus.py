@@ -6,8 +6,12 @@ from datetime import datetime
 from pathlib import Path
 
 
+MILLISECONDS_PER_SECOND = 1000
+
+
 def epoch(timestamp: str) -> float:
-    return datetime.fromisoformat(timestamp.replace("Z", "+00:00")).timestamp()
+    parsed = datetime.fromisoformat(timestamp.replace("Z", "+00:00")).timestamp()
+    return math.floor(parsed * MILLISECONDS_PER_SECOND) / MILLISECONDS_PER_SECOND
 
 
 def load_matrix(path: Path) -> tuple[dict, list[dict]]:

@@ -73,6 +73,24 @@ class OutcomeTests(unittest.TestCase):
 
 
 class MonitoringTests(unittest.TestCase):
+    def test_aligned_aggregate_accepts_prometheus_millisecond_boundary(self):
+        metrics = load_script("summarize-prometheus.py")
+        started_at = metrics.epoch("2026-07-18T13:53:58.314301282Z")
+        ended_at = metrics.epoch("2026-07-18T13:54:24.130146785Z")
+        timestamps = [started_at + offset for offset in range(0, 26, 5)]
+        series = [
+            {
+                "metric": {"container_label_com_docker_compose_service": service},
+                "values": [[timestamp, "1"] for timestamp in timestamps],
+            }
+            for service in ("a", "b")
+        ]
+
+        aggregate = metrics.aligned_aggregate(series, ["a", "b"], started_at, ended_at, 5)
+
+        self.assertEqual(6, aggregate["expectedSampleCount"])
+        self.assertEqual(6, aggregate["availableSampleCount"])
+
     def test_aligned_aggregate_requires_all_services(self):
         metrics = load_script("summarize-prometheus.py")
         series = [
