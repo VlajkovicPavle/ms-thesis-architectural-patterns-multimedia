@@ -1,0 +1,152 @@
+name: media-microservices
+
+services:
+  gateway:
+    image: nginx:1.27-alpine
+    depends_on:
+      media-service:
+        condition: service_healthy
+      notification-service:
+        condition: service_healthy
+    ports:
+      - "${GATEWAY_PORT:-8080}:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    cpus: ${GATEWAY_CPUS:-0.10}
+    mem_limit: ${GATEWAY_MEMORY:-64m}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  media-service:
+    build:
+      context: .
+      dockerfile: media-service/Dockerfile
+    image: media-microservices/media-service:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${MEDIA_DB:-media_db}
+      SPRING_DATASOURCE_USERNAME: ${MEDIA_DB_USER:-media_user}
+      SPRING_DATASOURCE_PASSWORD: ${MEDIA_DB_PASSWORD:-media_password}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER:-media}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-media}
+      APP_STORAGE_LOCAL_PATH: /var/lib/media
+    expose:
+      - "8080"
+    volumes:
+      - media_data:/var/lib/media
+    cpus: ${MEDIA_SERVICE_CPUS:-0.65}
+    mem_limit: ${MEDIA_SERVICE_MEMORY:-768m}
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/api/actuator/health"]
+      start_period: 120s
+      interval: 5s
+      timeout: 3s
+      retries: 18
+
+  transcoder-service:
+    build:
+      context: .
+      dockerfile: transcoder-service/Dockerfile
+    image: media-microservices/transcoder-service:latest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER:-media}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-media}
+      APP_STORAGE_LOCAL_PATH: /var/lib/media
+      RENDITION_POOL_SIZE: ${RENDITION_POOL_SIZE:-8}
+    expose:
+      - "8080"
+    volumes:
+      - media_data:/var/lib/media
+    cpus: ${TRANSCODER_SERVICE_CPUS:-1.00}
+    mem_limit: ${TRANSCODER_SERVICE_MEMORY:-896m}
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/actuator/health"]
+      start_period: 120s
+      interval: 5s
+      timeout: 3s
+      retries: 18
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    image: media-microservices/notification-service:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${NOTIFICATION_DB:-notification_db}
+      SPRING_DATASOURCE_USERNAME: ${NOTIFICATION_DB_USER:-notification_user}
+      SPRING_DATASOURCE_PASSWORD: ${NOTIFICATION_DB_PASSWORD:-notification_password}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER:-media}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-media}
+    expose:
+      - "8080"
+    cpus: ${NOTIFICATION_SERVICE_CPUS:-0.25}
+    mem_limit: ${NOTIFICATION_SERVICE_MEMORY:-320m}
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/api/actuator/health"]
+      start_period: 120s
+      interval: 5s
+      timeout: 3s
+      retries: 18
+
+  rabbitmq:
+    image: rabbitmq:4.1-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-media}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-media}
+    ports:
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    cpus: ${RABBITMQ_CPUS:-0.50}
+    mem_limit: ${RABBITMQ_MEMORY:-512m}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 18
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_SUPERUSER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD:-postgres}
+      POSTGRES_DB: postgres
+      MEDIA_DB: ${MEDIA_DB:-media_db}
+      MEDIA_DB_USER: ${MEDIA_DB_USER:-media_user}
+      MEDIA_DB_PASSWORD: ${MEDIA_DB_PASSWORD:-media_password}
+      NOTIFICATION_DB: ${NOTIFICATION_DB:-notification_db}
+      NOTIFICATION_DB_USER: ${NOTIFICATION_DB_USER:-notification_user}
+      NOTIFICATION_DB_PASSWORD: ${NOTIFICATION_DB_PASSWORD:-notification_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init-databases.sh:/docker-entrypoint-initdb.d/10-init-databases.sh:ro
+    cpus: ${POSTGRES_CPUS:-0.50}
+    mem_limit: ${POSTGRES_MEMORY:-512m}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_SUPERUSER:-postgres} -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  media_data:
+  postgres_data:
+  rabbitmq_data:
