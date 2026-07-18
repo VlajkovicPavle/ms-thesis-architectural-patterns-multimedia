@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "source-1280x800-10s",
+  "materialized": true,
+  "recipe": "benchmark/fixtures/source-video.recipe.json",
+  "recipeSha256": "828560d997054ec23974ecd3ef8afce4b2b6bfa63554df965625a022453476db",
+  "file": "benchmark/data/videos/source-1280x800-10s.mp4",
+  "sha256": "d4d0d3b35c82cb4e6326aacd54885c5c74ae0b1303c38060f0aa1a2d28bd1130",
+  "containerImage": "docker.io/jrottenberg/ffmpeg@sha256:292a972c60356abd651d9a4f9c808c13e7473f65ad400b7eb99215f4e571931d",
+  "width": 1280,
+  "height": 800,
+  "durationSeconds": 10.0,
+  "framesPerSecond": 30
+}
