@@ -1,0 +1,214 @@
+asyncapi: 3.0.0
+info:
+  title: Media Rendition Messaging
+  version: 1.0.0
+  description: >-
+    RabbitMQ topology for rendition processing. Exchanges and queues are durable, but this
+    prototype does not provide unconditional end-to-end at-least-once delivery because database
+    commits and publications are not atomic and publishers do not use confirms or an outbox.
+servers:
+  rabbitmq:
+    host: rabbitmq:5672
+    protocol: amqp
+channels:
+  renditionCommand:
+    address: rendition.command.create
+    messages:
+      command: {$ref: '#/components/messages/RenditionCommand'}
+    bindings:
+      amqp:
+        is: routingKey
+        exchange:
+          name: media.rendition.commands
+          type: topic
+          durable: true
+          autoDelete: false
+        bindingVersion: 0.3.0
+  renditionCommandQueue:
+    address: transcoder.rendition.commands
+    description: Bound to media.rendition.commands with rendition.command.create.
+    messages:
+      command: {$ref: '#/components/messages/RenditionCommand'}
+    bindings:
+      amqp:
+        is: queue
+        queue:
+          name: transcoder.rendition.commands
+          durable: true
+          exclusive: false
+          autoDelete: false
+        bindingVersion: 0.3.0
+    x-amqp-bindings:
+      - exchange: media.rendition.commands
+        routingKey: rendition.command.create
+  renditionRunning:
+    address: rendition.event.running
+    messages:
+      running: {$ref: '#/components/messages/RenditionRunning'}
+    bindings:
+      amqp:
+        is: routingKey
+        exchange:
+          name: media.rendition.events
+          type: topic
+          durable: true
+          autoDelete: false
+        bindingVersion: 0.3.0
+  renditionSucceeded:
+    address: rendition.event.succeeded
+    messages:
+      succeeded: {$ref: '#/components/messages/RenditionSucceeded'}
+    bindings:
+      amqp:
+        is: routingKey
+        exchange:
+          name: media.rendition.events
+          type: topic
+          durable: true
+          autoDelete: false
+        bindingVersion: 0.3.0
+  renditionFailed:
+    address: rendition.event.failed
+    messages:
+      failed: {$ref: '#/components/messages/RenditionFailed'}
+    bindings:
+      amqp:
+        is: routingKey
+        exchange:
+          name: media.rendition.events
+          type: topic
+          durable: true
+          autoDelete: false
+        bindingVersion: 0.3.0
+  renditionEventQueue:
+    address: media.rendition.events
+    description: Bound to media.rendition.events with rendition.event.*.
+    messages:
+      running: {$ref: '#/components/messages/RenditionRunning'}
+      succeeded: {$ref: '#/components/messages/RenditionSucceeded'}
+      failed: {$ref: '#/components/messages/RenditionFailed'}
+    bindings:
+      amqp:
+        is: queue
+        queue:
+          name: media.rendition.events
+          durable: true
+          exclusive: false
+          autoDelete: false
+        bindingVersion: 0.3.0
+    x-amqp-bindings:
+      - exchange: media.rendition.events
+        routingKey: rendition.event.*
+  terminalNotification:
+    address: notification.terminal
+    messages:
+      terminal: {$ref: '#/components/messages/TerminalNotification'}
+    bindings:
+      amqp:
+        is: routingKey
+        exchange:
+          name: media.notifications
+          type: topic
+          durable: true
+          autoDelete: false
+        bindingVersion: 0.3.0
+  terminalNotificationQueue:
+    address: notification.terminal.events
+    description: Bound to media.notifications with notification.terminal.
+    messages:
+      terminal: {$ref: '#/components/messages/TerminalNotification'}
+    bindings:
+      amqp:
+        is: queue
+        queue:
+          name: notification.terminal.events
+          durable: true
+          exclusive: false
+          autoDelete: false
+        bindingVersion: 0.3.0
+    x-amqp-bindings:
+      - exchange: media.notifications
+        routingKey: notification.terminal
+operations:
+  publishCommand:
+    action: send
+    channel: {$ref: '#/channels/renditionCommand'}
+  consumeCommand:
+    action: receive
+    channel: {$ref: '#/channels/renditionCommandQueue'}
+    description: >-
+      AUTO acknowledgement occurs after listener return. Listener exceptions are requeued by the
+      container; no Spring retry interceptor or manual acknowledgement is configured.
+  publishRunning:
+    action: send
+    channel: {$ref: '#/channels/renditionRunning'}
+  publishSucceeded:
+    action: send
+    channel: {$ref: '#/channels/renditionSucceeded'}
+  publishFailed:
+    action: send
+    channel: {$ref: '#/channels/renditionFailed'}
+  consumeOutcome:
+    action: receive
+    channel: {$ref: '#/channels/renditionEventQueue'}
+  publishNotification:
+    action: send
+    channel: {$ref: '#/channels/terminalNotification'}
+  consumeNotification:
+    action: receive
+    channel: {$ref: '#/channels/terminalNotificationQueue'}
+components:
+  messages:
+    RenditionCommand:
+      name: RenditionCommand
+      payload:
+        type: object
+        required: [renditionId, videoId, resolution, sourceIdentifier, outputFileName, createdAt]
+        properties:
+          renditionId: {type: string, format: uuid}
+          videoId: {type: string, format: uuid}
+          resolution: {$ref: '#/components/schemas/Resolution'}
+          sourceIdentifier: {type: string}
+          outputFileName: {type: string}
+          createdAt: {type: string, format: date-time}
+    RenditionRunning:
+      name: RenditionRunning
+      payload: {$ref: '#/components/schemas/BaseEvent'}
+    RenditionSucceeded:
+      name: RenditionSucceeded
+      payload:
+        allOf:
+          - {$ref: '#/components/schemas/BaseEvent'}
+          - type: object
+            required: [storedFileIdentifier]
+            properties: {storedFileIdentifier: {type: string}}
+    RenditionFailed:
+      name: RenditionFailed
+      payload:
+        allOf:
+          - {$ref: '#/components/schemas/BaseEvent'}
+          - type: object
+            required: [error]
+            properties: {error: {type: string}}
+    TerminalNotification:
+      name: TerminalNotification
+      payload:
+        type: object
+        required: [videoId, type, message, occurredAt]
+        properties:
+          videoId: {type: string, format: uuid}
+          renditionId: {type: [string, 'null'], format: uuid}
+          type: {type: string, enum: [TASK_COMPLETED, TASK_FAILED, ALL_COMPLETED]}
+          message: {type: string}
+          occurredAt: {type: string, format: date-time}
+  schemas:
+    Resolution:
+      type: string
+      enum: [SD_360, SD_480, HD_720, FHD_1080]
+    BaseEvent:
+      type: object
+      required: [renditionId, videoId, occurredAt]
+      properties:
+        renditionId: {type: string, format: uuid}
+        videoId: {type: string, format: uuid}
+        occurredAt: {type: string, format: date-time}
