@@ -1,11 +1,33 @@
 {
   "uid": "api",
-  "title": "API — HTTP",
+  "title": "API - HTTP",
   "tags": ["benchmark"],
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "5s",
   "time": { "from": "now-15m", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "variant",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(http_server_requests_seconds_count, variant)",
+        "includeAll": true,
+        "multi": true,
+        "refresh": 2
+      },
+      {
+        "name": "service",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(http_server_requests_seconds_count{variant=~\"$variant\"}, service)",
+        "includeAll": true,
+        "multi": true,
+        "refresh": 2
+      }
+    ]
+  },
   "panels": [
     {
       "id": 1,
@@ -16,7 +38,7 @@
       "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 10 }, "unit": "reqps" }, "overrides": [] },
       "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (status) (rate(http_server_requests_seconds_count[1m]))", "legendFormat": "{{status}}" }
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (service, status) (rate(http_server_requests_seconds_count{variant=~\"$variant\",service=~\"$service\"}[1m]))", "legendFormat": "{{service}} {{status}}" }
       ]
     },
     {
@@ -28,7 +50,7 @@
       "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 10 }, "unit": "reqps" }, "overrides": [] },
       "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (uri) (rate(http_server_requests_seconds_count[1m]))", "legendFormat": "{{uri}}" }
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (service, uri) (rate(http_server_requests_seconds_count{variant=~\"$variant\",service=~\"$service\"}[1m]))", "legendFormat": "{{service}} {{uri}}" }
       ]
     },
     {
@@ -40,7 +62,7 @@
       "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 10 }, "unit": "s" }, "overrides": [] },
       "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.95, sum by (le, uri) (rate(http_server_requests_seconds_bucket[5m])))", "legendFormat": "{{uri}}" }
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.95, sum by (le, service, uri) (rate(http_server_requests_seconds_bucket{variant=~\"$variant\",service=~\"$service\"}[5m])))", "legendFormat": "{{service}} {{uri}}" }
       ]
     },
     {
@@ -52,7 +74,7 @@
       "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 20 }, "unit": "reqps" }, "overrides": [] },
       "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (uri) (rate(http_server_requests_seconds_count{status=~\"5..\"}[1m]))", "legendFormat": "{{uri}}" }
+        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (service, uri) (rate(http_server_requests_seconds_count{variant=~\"$variant\",service=~\"$service\",status=~\"5..\"}[1m]))", "legendFormat": "{{service}} {{uri}}" }
       ]
     }
   ]

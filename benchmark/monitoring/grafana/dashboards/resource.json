@@ -1,58 +1,82 @@
 {
   "uid": "resource",
-  "title": "Resource — Containers",
+  "title": "Resource - Compose Services",
   "tags": ["benchmark"],
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "5s",
   "time": { "from": "now-15m", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "project",
+        "label": "Compose project",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(container_memory_working_set_bytes, container_label_com_docker_compose_project)",
+        "includeAll": true,
+        "multi": true,
+        "refresh": 2
+      },
+      {
+        "name": "service",
+        "label": "Compose service",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(container_memory_working_set_bytes{container_label_com_docker_compose_project=~\"$project\"}, container_label_com_docker_compose_service)",
+        "includeAll": true,
+        "multi": true,
+        "refresh": 2
+      }
+    ]
+  },
   "panels": [
     {
       "id": 1,
       "type": "timeseries",
-      "title": "CPU usage by container (cores)",
+      "title": "CPU usage by project/service (cores)",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 10 }, "unit": "short" }, "overrides": [] },
       "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (name) (rate(container_cpu_usage_seconds_total{name=~\"media-monolith.*\"}[1m]))", "legendFormat": "{{name}}" }
+        { "refId": "A", "expr": "sum by (container_label_com_docker_compose_project, container_label_com_docker_compose_service) (rate(container_cpu_usage_seconds_total{container_label_com_docker_compose_project=~\"$project\",container_label_com_docker_compose_service=~\"$service\"}[1m]))", "legendFormat": "{{container_label_com_docker_compose_project}}/{{container_label_com_docker_compose_service}}" }
       ]
     },
     {
       "id": 2,
       "type": "timeseries",
-      "title": "Memory usage by container",
+      "title": "Working-set memory by project/service",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 10 }, "unit": "bytes" }, "overrides": [] },
       "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "container_memory_usage_bytes{name=~\"media-monolith.*\"}", "legendFormat": "{{name}}" }
+        { "refId": "A", "expr": "sum by (container_label_com_docker_compose_project, container_label_com_docker_compose_service) (container_memory_working_set_bytes{container_label_com_docker_compose_project=~\"$project\",container_label_com_docker_compose_service=~\"$service\"})", "legendFormat": "{{container_label_com_docker_compose_project}}/{{container_label_com_docker_compose_service}}" }
       ]
     },
     {
       "id": 3,
       "type": "timeseries",
-      "title": "Network received by container",
+      "title": "Network received by project/service",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 10 }, "unit": "Bps" }, "overrides": [] },
       "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (name) (rate(container_network_receive_bytes_total{name=~\"media-monolith.*\"}[1m]))", "legendFormat": "{{name}}" }
+        { "refId": "A", "expr": "sum by (container_label_com_docker_compose_project, container_label_com_docker_compose_service) (rate(container_network_receive_bytes_total{container_label_com_docker_compose_project=~\"$project\",container_label_com_docker_compose_service=~\"$service\"}[1m]))", "legendFormat": "{{container_label_com_docker_compose_project}}/{{container_label_com_docker_compose_service}}" }
       ]
     },
     {
       "id": 4,
       "type": "timeseries",
-      "title": "Network transmitted by container",
+      "title": "Network transmitted by project/service",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 10 }, "unit": "Bps" }, "overrides": [] },
       "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "refId": "A", "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (name) (rate(container_network_transmit_bytes_total{name=~\"media-monolith.*\"}[1m]))", "legendFormat": "{{name}}" }
+        { "refId": "A", "expr": "sum by (container_label_com_docker_compose_project, container_label_com_docker_compose_service) (rate(container_network_transmit_bytes_total{container_label_com_docker_compose_project=~\"$project\",container_label_com_docker_compose_service=~\"$service\"}[1m]))", "legendFormat": "{{container_label_com_docker_compose_project}}/{{container_label_com_docker_compose_service}}" }
       ]
     }
   ]
