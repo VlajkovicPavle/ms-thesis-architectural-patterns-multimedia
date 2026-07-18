@@ -1,0 +1,136 @@
+{
+  "fixtureManifest": "benchmark/fixtures/source-video.manifest.json",
+  "fixtureManifestSha256": "fe9df0d452f21b0e7a0dfd2ef1befe705f041c6a752baec287b4f83f2530ce76",
+  "fixtureSha256": "d4d0d3b35c82cb4e6326aacd54885c5c74ae0b1303c38060f0aa1a2d28bd1130",
+  "official": false,
+  "protocolId": "three-variant-pilot-v1",
+  "protocolPath": "benchmark/protocol/pilot-protocol.json",
+  "protocolSha256": "05e3763ac5b1dd8f9e27be5e04a08db208455073abfd9936edea1adc8ca1b576",
+  "protocolStatus": "pilot",
+  "runCount": 12,
+  "runs": [
+    {
+      "blockId": "vertical-4-r1",
+      "ordinal": 1,
+      "plannedRunId": "three-variant-pilot-v1-vertical-4-r1-p1-modular_monolith",
+      "position": 1,
+      "repetition": 1,
+      "resourceProfile": "vertical-4",
+      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "variant": "modular_monolith"
+    },
+    {
+      "blockId": "vertical-4-r1",
+      "ordinal": 2,
+      "plannedRunId": "three-variant-pilot-v1-vertical-4-r1-p2-monolith",
+      "position": 2,
+      "repetition": 1,
+      "resourceProfile": "vertical-4",
+      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "variant": "monolith"
+    },
+    {
+      "blockId": "vertical-4-r1",
+      "ordinal": 3,
+      "plannedRunId": "three-variant-pilot-v1-vertical-4-r1-p3-microservices",
+      "position": 3,
+      "repetition": 1,
+      "resourceProfile": "vertical-4",
+      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "variant": "microservices"
+    },
+    {
+      "blockId": "vertical-2-r1",
+      "ordinal": 4,
+      "plannedRunId": "three-variant-pilot-v1-vertical-2-r1-p1-monolith",
+      "position": 1,
+      "repetition": 1,
+      "resourceProfile": "vertical-2",
+      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "variant": "monolith"
+    },
+    {
+      "blockId": "vertical-2-r1",
+      "ordinal": 5,
+      "plannedRunId": "three-variant-pilot-v1-vertical-2-r1-p2-microservices",
+      "position": 2,
+      "repetition": 1,
+      "resourceProfile": "vertical-2",
+      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "variant": "microservices"
+    },
+    {
+      "blockId": "vertical-2-r1",
+      "ordinal": 6,
+      "plannedRunId": "three-variant-pilot-v1-vertical-2-r1-p3-modular_monolith",
+      "position": 3,
+      "repetition": 1,
+      "resourceProfile": "vertical-2",
+      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "variant": "modular_monolith"
+    },
+    {
+      "blockId": "vertical-1-r1",
+      "ordinal": 7,
+      "plannedRunId": "three-variant-pilot-v1-vertical-1-r1-p1-microservices",
+      "position": 1,
+      "repetition": 1,
+      "resourceProfile": "vertical-1",
+      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "variant": "microservices"
+    },
+    {
+      "blockId": "vertical-1-r1",
+      "ordinal": 8,
+      "plannedRunId": "three-variant-pilot-v1-vertical-1-r1-p2-modular_monolith",
+      "position": 2,
+      "repetition": 1,
+      "resourceProfile": "vertical-1",
+      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "variant": "modular_monolith"
+    },
+    {
+      "blockId": "vertical-1-r1",
+      "ordinal": 9,
+      "plannedRunId": "three-variant-pilot-v1-vertical-1-r1-p3-monolith",
+      "position": 3,
+      "repetition": 1,
+      "resourceProfile": "vertical-1",
+      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "variant": "monolith"
+    },
+    {
+      "blockId": "baseline-r1",
+      "ordinal": 10,
+      "plannedRunId": "three-variant-pilot-v1-baseline-r1-p1-modular_monolith",
+      "position": 1,
+      "repetition": 1,
+      "resourceProfile": "baseline",
+      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "variant": "modular_monolith"
+    },
+    {
+      "blockId": "baseline-r1",
+      "ordinal": 11,
+      "plannedRunId": "three-variant-pilot-v1-baseline-r1-p2-monolith",
+      "position": 2,
+      "repetition": 1,
+      "resourceProfile": "baseline",
+      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "variant": "monolith"
+    },
+    {
+      "blockId": "baseline-r1",
+      "ordinal": 12,
+      "plannedRunId": "three-variant-pilot-v1-baseline-r1-p3-microservices",
+      "position": 3,
+      "repetition": 1,
+      "resourceProfile": "baseline",
+      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "variant": "microservices"
+    }
+  ],
+  "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+  "scheduleSeed": 8202491,
+  "schemaVersion": 2
+}
