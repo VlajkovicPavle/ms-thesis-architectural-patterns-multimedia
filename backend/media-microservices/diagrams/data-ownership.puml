@@ -1,0 +1,17 @@
+@startuml
+component "media-service" as Media
+component "transcoder-service" as Transcoder
+component "notification-service" as Notification
+database "media_db\nvideo, rendition" as MediaDb
+database "notification_db\nnotification" as NotificationDb
+storage "media_data\nsource + rendition bytes" as Files
+
+Media --> MediaDb : exclusive credentials
+Notification --> NotificationDb : exclusive credentials
+Media --> Files : upload/read/download
+Transcoder --> Files : read source/write rendition
+note right of Transcoder
+  No business database.
+  Metadata arrives in commands.
+end note
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+skinparam componentStyle rectangle
+actor Client
+component "Nginx gateway" as Gateway
+component "media-service" as Media
+component "transcoder-service" as Transcoder
+component "notification-service" as Notification
+queue RabbitMQ
+database "media_db" as MediaDb
+database "notification_db" as NotificationDb
+folder "shared media volume" as Files
+
+Client --> Gateway : /api/v1/**
+Gateway --> Media : video/rendition
+Gateway --> Notification : notification/SSE
+Media --> MediaDb
+Media --> Files
+Media --> RabbitMQ : commands/notifications
+RabbitMQ --> Transcoder : commands
+Transcoder --> Files
+Transcoder --> RabbitMQ : state events
+RabbitMQ --> Media : state events
+RabbitMQ --> Notification : terminal notifications
+Notification --> NotificationDb
+Notification --> Gateway : SSE
+@enduml

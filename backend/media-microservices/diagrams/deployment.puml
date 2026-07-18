@@ -1,0 +1,24 @@
+@startuml
+node "Docker Compose: media-microservices" {
+  node gateway
+  node "media-service"
+  node "transcoder-service"
+  node "notification-service"
+  node RabbitMQ
+  node PostgreSQL {
+    database media_db
+    database notification_db
+  }
+  storage media_data
+}
+
+gateway --> "media-service"
+gateway --> "notification-service"
+"media-service" --> media_db : media_user
+"notification-service" --> notification_db : notification_user
+"media-service" --> RabbitMQ
+"transcoder-service" --> RabbitMQ
+"notification-service" --> RabbitMQ
+"media-service" --> media_data
+"transcoder-service" --> media_data
+@enduml
