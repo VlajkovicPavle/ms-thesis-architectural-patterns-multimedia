@@ -6,6 +6,12 @@ target/
 .idea/
 *.iml
 
+# Eclipse / Maven IDE metadata
+.classpath
+.project
+.settings/
+.factorypath
+
 docs/
 
 .vscode/
@@ -13,6 +19,9 @@ docs/
 node_modules/
 dist/
 build/
+__pycache__/
+*.py[cod]
+.pytest_cache/
 .env
 .env.local
 .env.*.local
@@ -29,6 +38,9 @@ benchmark/results/*.duckdb.wal
 benchmark/results/runs/
 benchmark/results/summary/
 benchmark/gatling/target/
+
+# Temporary diagram renders; editable PlantUML sources stay versioned
+backend/media-microservices/diagrams/generated/
 
 # LaTeX build artifacts
 *.aux

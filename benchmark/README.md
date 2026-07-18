@@ -1,123 +1,122 @@
 # Benchmark Harness
 
-Phase 1 provides a single-instance smoke harness for the media monolith. Phase 2 adds a baseline runner that records run metadata, Gatling reports, Prometheus snapshots, and DuckDB run rows under a stable result layout. Phase 3 adds repeatable vertical resource profiles. Phase 5 packages the thesis experiment matrix, a real load/stress scenario, and result summaries. Phase 4 horizontal scaling is deferred/optional because the single-instance and vertical profiles are enough for the near-term thesis comparison.
+This harness compares `monolith`, `modular_monolith`, and `microservices` through one public gateway URL. Transport statistics, five-way business outcomes, harness validity, SUT resources, and infrastructure resources are independent result dimensions.
+
+The committed protocol and schedule remain non-official pilot artifacts. Unresolved settings are listed in `benchmark/protocol/pilot-protocol.json`.
 
 ## Prerequisites
 
 - Docker with Compose v2.
-- `ffmpeg` for deterministic test video generation.
-- `duckdb` for benchmark metadata storage.
-- Java 21 and Maven wrapper dependencies for the Gatling module.
+- Java 21.
+- Python 3.11 or newer.
+- `curl`.
+- DuckDB, or Docker for the DuckDB fallback.
 
-## Smoke Flow
+## Fixture Binding
 
-From the repository root:
+The measured source is `1280x800`, allowing valid `SD_360` and `HD_720` downscales. `benchmark/fixtures/source-video.recipe.json` pins FFmpeg by container digest. The binary remains ignored.
 
 ```sh
-benchmark/scripts/init-db.sh
 benchmark/scripts/generate-video.sh
-benchmark/scripts/reset-single.sh
-benchmark/scripts/start-single.sh
-benchmark/scripts/wait-single.sh
-benchmark/scripts/run-gatling-smoke.sh
+python3 benchmark/scripts/fixture.py verify
 ```
 
-The default benchmark target is `http://localhost:8080`. The Gatling scenario uses `/api/v1/...` paths so the same base URL can later point at a load balancer without changing scenarios.
+Generation is never implicit. The protocol binds both the raw SHA-256 of `source-video.manifest.json` and the fixture SHA-256 recorded inside it. Schedule materialization and runner settings verify both values, so changing fixture provenance requires an intentional protocol and schedule rematerialization.
 
-## Baseline Flow
+## Pilot Schedule
 
-The Phase 2 runner starts a clean single-instance stack, waits for health, runs the Gatling scenario, snapshots Prometheus before and after the run, and updates DuckDB:
-
-```sh
-benchmark/scripts/run-benchmark.sh
-```
-
-Useful overrides:
-
-- `BENCHMARK_VARIANT=monolith|modular_monolith` selects `backend/media-monolith` or `backend/media-modular`.
-- `BENCHMARK_BASE_URL=http://localhost:8080` points Gatling and health checks at the app or load balancer.
-- `BENCHMARK_PROMETHEUS_URL=http://localhost:9090` controls Prometheus export.
-- `BENCHMARK_RENDITIONS=SD_360,HD_720` controls requested renditions.
-- `BENCHMARK_RESOURCE_PROFILE=baseline|vertical-1|vertical-2|vertical-4|vertical-8|custom` controls app CPU/memory limits and `rendition.pool-size`.
-- `BENCHMARK_SCENARIO=SmokeSimulation|LoadStressSimulation` selects the Gatling simulation.
-- `BENCHMARK_LOAD_USERS=12`, `BENCHMARK_RAMP_SECONDS=60`, `BENCHMARK_POLL_ATTEMPTS=180`, and `BENCHMARK_POLL_PAUSE_MILLIS=1000` tune `LoadStressSimulation`.
-- `BENCHMARK_DOWNLOAD_RENDITION=true` adds one finished-rendition download per virtual user. Leave it `false` for the official write-heavy matrix unless read/download behavior is being sampled separately.
-- `BENCHMARK_AUTO_STACK=false` skips Docker reset/start when an isolated stack is already running.
-- `BENCHMARK_APP_PORT`, `BENCHMARK_POSTGRES_PORT`, `BENCHMARK_PROMETHEUS_PORT`, `BENCHMARK_CADVISOR_PORT`, and `BENCHMARK_GRAFANA_PORT` override host ports for isolated local runs.
-
-Vertical profiles map app limits and pool size as follows:
-
-| Profile | App CPUs | App Memory | Rendition Pool |
-| --- | ---: | ---: | ---: |
-| `baseline` | `2.0` | `2g` | `8` |
-| `vertical-1` | `1.0` | `1g` | `1` |
-| `vertical-2` | `2.0` | `2g` | `2` |
-| `vertical-4` | `4.0` | `4g` | `4` |
-| `vertical-8` | `8.0` | `8g` | `8` |
-
-For `custom`, set `BENCHMARK_APP_CPUS`, `BENCHMARK_APP_MEMORY`, and `BENCHMARK_RENDITION_POOL_SIZE` explicitly.
-
-## Phase 5 Experiment Matrix
-
-The official near-term matrix compares the monolith and modular monolith on the same single-instance topology and vertical profiles:
-
-| Dimension | Values |
-| --- | --- |
-| Variants | `monolith`, `modular_monolith` |
-| Topology | `single` |
-| Resource profiles | `baseline`, `vertical-1`, `vertical-2`, `vertical-4` |
-| Scenario | `LoadStressSimulation` |
-| Repetitions | `3` |
-| Default requested renditions | `SD_360,HD_720` |
-
-This yields 24 runs: 2 variants x 4 profiles x 3 repetitions. `vertical-8` remains available for exploratory runs but is not part of the official minimal matrix.
-
-Run the full matrix from the repository root:
+The schedule seed is committed in `pilot-protocol.json`. Each profile/repetition block contains every architecture exactly once. Block order is deterministically shuffled, and architecture position uses a balanced rotation. Every row records `blockId`, `position`, `repetition`, `plannedRunId`, and the schedule identity.
 
 ```sh
+python3 benchmark/scripts/materialize-schedule.py materialize
+python3 benchmark/scripts/materialize-schedule.py verify
 benchmark/scripts/run-experiment-matrix.sh
 ```
 
-Useful matrix overrides:
+Verification rejects hash drift, fixture drift, missing Cartesian coverage, duplicate variants within a block, invalid positions, unbalanced positions, or identity drift. `BENCHMARK_MATRIX_VARIANTS` and `BENCHMARK_MATRIX_PROFILES` only filter already-materialized rows for resume work.
 
-- `BENCHMARK_REPETITIONS=1` for a quick trial.
-- `BENCHMARK_MATRIX_VARIANTS=monolith` or `BENCHMARK_MATRIX_VARIANTS=modular_monolith` to resume only one variant.
-- `BENCHMARK_MATRIX_PROFILES=vertical-2,vertical-4` to resume selected profiles.
-- `BENCHMARK_LOAD_USERS`, `BENCHMARK_RAMP_SECONDS`, `BENCHMARK_RENDITIONS`, and `BENCHMARK_DOWNLOAD_RENDITION` flow through to every run.
-
-`LoadStressSimulation` performs one full upload -> rendition request -> poll-until-finished flow per virtual user. Polling stops for a user after all requested renditions finish, avoiding the fixed over-polling used by the smoke scenario.
-
-Example isolated monolith run while another variant owns the default ports:
+## Run Lifecycle
 
 ```sh
-BENCHMARK_APP_PORT=18080 \
-BENCHMARK_POSTGRES_PORT=15433 \
-BENCHMARK_PROMETHEUS_PORT=19090 \
-BENCHMARK_CADVISOR_PORT=18081 \
-BENCHMARK_GRAFANA_PORT=13000 \
-BENCHMARK_RESOURCE_PROFILE=vertical-1 \
+BENCHMARK_VARIANT=microservices \
+BENCHMARK_RESOURCE_PROFILE=vertical-2 \
 benchmark/scripts/run-benchmark.sh
 ```
 
+For auto-managed runs, the runner removes stale benchmark projects before startup and installs an exit trap that runs `docker compose down -v --remove-orphans` after success, validation failure, interruption, or runner failure. This prevents matrix transitions from retaining the previous variant. Set `BENCHMARK_KEEP_STACK=true` only for explicit debugging; it intentionally disables final cleanup. `BENCHMARK_AUTO_STACK=false` never cleans an externally managed stack.
+
+Use `BENCHMARK_REPLACEMENT_FOR_RUN_ID=<invalid-run-id>` when a row replaces an invalid attempt. The replacement link is stored with schedule block metadata.
+
+## Timing And Drain
+
+Gatling emits `gatling-timestamps.json` from its `before()` and `after()` lifecycle hooks. These timestamps delimit scenario injection through the last scenario completion and exclude Maven startup, dependency work, and report generation. They are authoritative measurement boundaries in DuckDB and summaries.
+
+Maven runs in the background. As soon as Gatling emits the end timestamp, the runner starts drain reconciliation while report generation may continue. Drain boundaries remain separate in `timestamps.json`.
+
+During the configured drain period, `reconcile-business-outcomes.py` polls final video rendition status for unresolved records. At drain end it atomically rewrites the exhaustive JSONL so a late terminal result becomes `FINISHED` or `ERROR`; technically observable nonterminal work becomes `NO_TERMINAL_STATUS`; inaccessible final status becomes `TECHNICAL_STATUS_LOST`.
+
+## Business And Technical Results
+
+`LoadStressSimulation` emits one record for every expected user ID `1..N` and every exact planned resolution. The allowed outcomes are:
+
+- `FINISHED`
+- `ERROR`
+- `PRE_IDENTIFIER_FAILURE`
+- `NO_TERMINAL_STATUS`
+- `TECHNICAL_STATUS_LOST`
+
+HTTP checks remain Gatling transport KOs. Business `ERROR` and other business classifications do not invalidate the harness. Load simulations have no zero-KO assertion. Run-level `technical_valid` is determined only from harness artifacts: Gatling lifecycle completion, exact outcome keys, exact Prometheus target readiness, required metric availability, smoke identity checks, and reconciliation integrity.
+
+`SmokeSimulation` records the exact returned resolution identities and count in `smoke-validation.json`; a smoke run is technically valid only when they exactly equal the requested set and all are terminal.
+
+Confirmed business throughput is final `FINISHED` outcomes divided by the authoritative Gatling measurement duration. Transport request rate remains separately named.
+
+## Monitoring
+
+Prometheus uses file service discovery. Every target has canonical `variant`, `service`, and unique `target_id` labels; application-provided conflicting labels cannot replace them. Before injection, the runner waits for the active-target API to contain exactly the expected targets with health `up`, then archives the result in `prometheus-target-readiness.json`.
+
+`BENCHMARK_PROMETHEUS_TARGETS_JSON` can provide another valid one-or-many file-SD array, but all canonical labels remain required.
+
+Prometheus exports retain per-service labels and use `query_range` from authoritative measurement start through drain end. `query-manifest.jsonl` archives each exact query and boundary. SUT and infrastructure queries remain separate and memory uses `container_memory_working_set_bytes`.
+
+`prometheus/metric-summary.json` aligns SUT services by sample timestamp over measurement boundaries and records:
+
+- aggregate SUT CPU mean and p95 cores.
+- aggregate SUT working-memory mean and maximum bytes.
+- expected and available aligned sample counts.
+- per-service sample counts and all raw query availability.
+
+Incomplete app-up, SUT CPU, or SUT working-memory samples make `technical_valid=false` without deleting or rewriting business outcomes beyond normal drain reconciliation.
+
+Grafana dashboards remain generic across variant, service, Compose project, and Compose service.
+
+## Resource Boundary
+
+| Variant | SUT services | Separate infrastructure |
+| --- | --- | --- |
+| `monolith` | `app` | `postgres` |
+| `modular_monolith` | `app` | `postgres` |
+| `microservices` | `gateway`, `media-service`, `transcoder-service`, `notification-service` | `postgres`, `rabbitmq` |
+
+Existing variants assign the whole profile to `app`. Microservices divide the same total across four SUT containers and validate the CPU and memory sums. `RENDITION_POOL_SIZE` controls transcoder concurrency only.
+
 ## Outputs
 
-- DuckDB database: `benchmark/results/benchmark.duckdb` with one enum-backed `benchmark_runs` table.
-- Gatling reports: `benchmark/results/runs/<run-id>/gatling`
-- Run metadata: `benchmark/results/runs/<run-id>/metadata.json`
-- Prometheus snapshots: `benchmark/results/runs/<run-id>/prometheus/*.json`
-- Generated smoke video: `benchmark/data/videos/smoke-720p-10s.mp4`
-
-Summarize completed runs after any smoke, single run, or matrix run:
+- DuckDB: `benchmark/results/benchmark.duckdb`
+- Metadata and validation: `metadata.json`, `run-validation.json`
+- Timing: `gatling-timestamps.json`, `timestamps.json`, `drain-reconciliation.json`
+- Outcomes: `business-outcomes.jsonl`
+- Transport report: `gatling/`
+- Monitoring: `prometheus/*.json`, `prometheus/metric-summary.json`
 
 ```sh
 benchmark/scripts/summarize-results.py
 ```
 
-Summary outputs:
+CSV and Markdown summaries include schedule/block identity, replacement linkage, technical validity/reason, exact outcome completeness, all five outcomes, business throughput, transport KOs/latency, and aligned SUT CPU/memory statistics.
 
-- CSV: `benchmark/results/summary/benchmark-runs.csv`
-- Markdown: `benchmark/results/summary/benchmark-summary.md`
+## Compose Compatibility
 
-The summarizer joins `benchmark_runs` with Gatling `global_stats.json` when available and exports request count, failures, mean response time, p95, p99, max response time, and mean requests/second. Missing Gatling stats are left blank so failed or interrupted runs remain visible in the table.
+The microservices runner expects services named `gateway`, `media-service`, `transcoder-service`, `notification-service`, `postgres`, and `rabbitmq`. It maps `APP_PORT` to `GATEWAY_PORT` and layers `benchmark/monitoring/compose.monitoring.yml` into the same Compose project. Media and notification metrics use `/api/actuator/prometheus`; transcoder uses `/actuator/prometheus`.
 
-Live `.duckdb`, WAL, generated video, and run report artifacts are ignored by Git.
+The pilot remains non-official until repetition count, warm-up, drain, load, and ramp settings are frozen after pilot review.

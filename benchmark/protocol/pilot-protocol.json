@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 2,
+  "protocolId": "three-variant-pilot-v1",
+  "status": "pilot",
+  "official": false,
+  "variants": [
+    "monolith",
+    "modular_monolith",
+    "microservices"
+  ],
+  "topology": "single",
+  "resourceProfiles": [
+    "baseline",
+    "vertical-1",
+    "vertical-2",
+    "vertical-4"
+  ],
+  "scenario": "LoadStressSimulation",
+  "repetitions": 1,
+  "renditions": [
+    "SD_360",
+    "HD_720"
+  ],
+  "fixtureManifest": "benchmark/fixtures/source-video.manifest.json",
+  "fixtureManifestSha256": "fe9df0d452f21b0e7a0dfd2ef1befe705f041c6a752baec287b4f83f2530ce76",
+  "fixtureSha256": "d4d0d3b35c82cb4e6326aacd54885c5c74ae0b1303c38060f0aa1a2d28bd1130",
+  "scheduleSeed": 8202491,
+  "loadUsers": 12,
+  "rampSeconds": 60,
+  "pollAttempts": 180,
+  "pollPauseMillis": 1000,
+  "warmUpSeconds": 0,
+  "drainSeconds": 30,
+  "prometheusStepSeconds": 5,
+  "downloadRendition": false,
+  "unresolvedOfficialDecisions": [
+    "repetitions",
+    "warmUpSeconds",
+    "drainSeconds",
+    "loadUsers",
+    "rampSeconds"
+  ]
+}

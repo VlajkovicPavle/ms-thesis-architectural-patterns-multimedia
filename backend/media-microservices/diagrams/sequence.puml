@@ -1,0 +1,27 @@
+@startuml
+actor Client
+participant Gateway
+participant Media
+database media_db
+queue RabbitMQ
+participant Transcoder
+participant Notification
+database notification_db
+
+Client -> Gateway : POST /api/v1/rendition
+Gateway -> Media
+Media -> media_db : commit PENDING rows
+Media -> RabbitMQ : RenditionCommand (after commit)
+RabbitMQ -> Transcoder : RenditionCommand
+Transcoder -> RabbitMQ : RenditionRunning
+RabbitMQ -> Media : RenditionRunning
+Media -> media_db : commit RUNNING
+Transcoder -> Transcoder : FFmpeg shared source/output
+Transcoder -> RabbitMQ : RenditionSucceeded/Failed
+RabbitMQ -> Media : outcome
+Media -> media_db : commit FINISHED/ERROR
+Media -> RabbitMQ : terminal notification(s) (after commit)
+RabbitMQ -> Notification : TerminalNotification
+Notification -> notification_db : commit notification
+Notification --> Client : notification SSE (after commit)
+@enduml

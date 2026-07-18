@@ -2,7 +2,8 @@ services:
   prometheus:
     image: prom/prometheus:v2.53.4
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ${BENCHMARK_PROMETHEUS_CONFIG_FILE:-./prometheus/prometheus.yml}:/etc/prometheus/prometheus.yml:ro
+      - ${BENCHMARK_PROMETHEUS_TARGET_FILE:-./prometheus/targets/app.json}:/etc/prometheus/targets/app.json:ro
       - prometheus_data:/prometheus
     ports:
       - "${PROMETHEUS_PORT:-9090}:9090"
@@ -29,8 +30,8 @@ services:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ${BENCHMARK_GRAFANA_PROVISIONING_DIR:-./grafana/provisioning}:/etc/grafana/provisioning:ro
+      - ${BENCHMARK_GRAFANA_DASHBOARDS_DIR:-./grafana/dashboards}:/var/lib/grafana/dashboards:ro
       - grafana_data:/var/lib/grafana
     ports:
       - "${GRAFANA_PORT:-3000}:3000"

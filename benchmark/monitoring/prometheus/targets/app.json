@@ -1,0 +1,13 @@
+[
+  {
+    "targets": [
+      "app:8080"
+    ],
+    "labels": {
+      "variant": "local",
+      "service": "app",
+      "target_id": "local-app",
+      "metrics_path": "/api/actuator/prometheus"
+    }
+  }
+]
