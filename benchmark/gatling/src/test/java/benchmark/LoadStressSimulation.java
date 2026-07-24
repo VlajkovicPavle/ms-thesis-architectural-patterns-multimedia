@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -68,7 +69,12 @@ public class LoadStressSimulation extends Simulation {
           session ->
               session
                   .set("benchmarkStartedAt", Instant.now().toString())
+                  .set(
+                      "uploadFileName",
+                      UUID.randomUUID() + "-" + Path.of(VIDEO_FILE).getFileName())
                   .set("observations", new LinkedHashMap<String, RenditionObservation>())
+                  .set("uploadAccepted", false)
+                  .set("renditionRequestAccepted", false)
                   .set("statusObservationHadTechnicalLoss", false)
                   .set("allRenditionsTerminal", false));
 
@@ -78,7 +84,7 @@ public class LoadStressSimulation extends Simulation {
                   .post("/api/v1/video")
                   .bodyPart(
                       RawFileBodyPart("file", VIDEO_FILE)
-                          .fileName(Path.of(VIDEO_FILE).getFileName().toString())
+                          .fileName("#{uploadFileName}")
                           .contentType("video/mp4"))
                   .asMultipartForm()
                   .check(
@@ -276,8 +282,14 @@ public class LoadStressSimulation extends Simulation {
         record.put(
             "observedAtUtc", observation == null ? Instant.now().toString() : observation.observedAt());
         record.put("statusObservationHadTechnicalLoss", statusObservationHadTechnicalLoss);
-        record.put("uploadHttpStatus", session.getInt("uploadHttpStatus"));
-        record.put("renditionRequestHttpStatus", session.getInt("renditionRequestHttpStatus"));
+        record.put(
+            "uploadHttpStatus",
+            session.contains("uploadHttpStatus") ? session.getInt("uploadHttpStatus") : null);
+        record.put(
+            "renditionRequestHttpStatus",
+            session.contains("renditionRequestHttpStatus")
+                ? session.getInt("renditionRequestHttpStatus")
+                : null);
         appendOutcome(record);
       }
       return session;

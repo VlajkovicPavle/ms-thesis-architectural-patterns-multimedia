@@ -5,7 +5,7 @@
   "official": false,
   "protocolId": "three-variant-pilot-v1",
   "protocolPath": "benchmark/protocol/pilot-protocol.json",
-  "protocolSha256": "05e3763ac5b1dd8f9e27be5e04a08db208455073abfd9936edea1adc8ca1b576",
+  "protocolSha256": "54818b814f006d2d131ccf1e9ba013e02e0fc57506537c4adb9431a2f9971680",
   "protocolStatus": "pilot",
   "runCount": 12,
   "runs": [
@@ -16,7 +16,7 @@
       "position": 1,
       "repetition": 1,
       "resourceProfile": "vertical-4",
-      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
       "variant": "modular_monolith"
     },
     {
@@ -26,7 +26,7 @@
       "position": 2,
       "repetition": 1,
       "resourceProfile": "vertical-4",
-      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
       "variant": "monolith"
     },
     {
@@ -36,7 +36,7 @@
       "position": 3,
       "repetition": 1,
       "resourceProfile": "vertical-4",
-      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
       "variant": "microservices"
     },
     {
@@ -46,7 +46,7 @@
       "position": 1,
       "repetition": 1,
       "resourceProfile": "vertical-2",
-      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
       "variant": "monolith"
     },
     {
@@ -56,7 +56,7 @@
       "position": 2,
       "repetition": 1,
       "resourceProfile": "vertical-2",
-      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
       "variant": "microservices"
     },
     {
@@ -66,7 +66,7 @@
       "position": 3,
       "repetition": 1,
       "resourceProfile": "vertical-2",
-      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
       "variant": "modular_monolith"
     },
     {
@@ -76,7 +76,7 @@
       "position": 1,
       "repetition": 1,
       "resourceProfile": "vertical-1",
-      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
       "variant": "microservices"
     },
     {
@@ -86,7 +86,7 @@
       "position": 2,
       "repetition": 1,
       "resourceProfile": "vertical-1",
-      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
       "variant": "modular_monolith"
     },
     {
@@ -96,7 +96,7 @@
       "position": 3,
       "repetition": 1,
       "resourceProfile": "vertical-1",
-      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
       "variant": "monolith"
     },
     {
@@ -106,7 +106,7 @@
       "position": 1,
       "repetition": 1,
       "resourceProfile": "baseline",
-      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
       "variant": "modular_monolith"
     },
     {
@@ -116,7 +116,7 @@
       "position": 2,
       "repetition": 1,
       "resourceProfile": "baseline",
-      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
       "variant": "monolith"
     },
     {
@@ -126,11 +126,11 @@
       "position": 3,
       "repetition": 1,
       "resourceProfile": "baseline",
-      "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+      "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
       "variant": "microservices"
     }
   ],
-  "scheduleIdentity": "58793f135cc099bf3ede3c3a2388e7d0c1ab46f5aa924b0fd9bf4bb680d58d17",
+  "scheduleIdentity": "a2768075024216a927c497d8d8b850826491d2a71e89ccd42d9c795f7edfdaf2",
   "scheduleSeed": 8202491,
   "schemaVersion": 2
 }

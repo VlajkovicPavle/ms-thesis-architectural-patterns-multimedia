@@ -16,5 +16,9 @@ public interface RenditionRepository extends JpaRepository<Rendition, UUID> {
 
   List<Rendition> findAllByVideoId(UUID videoId);
 
+  long countByStatus(RenditionStatus status);
+
+  long countByStatusIn(Collection<RenditionStatus> statuses);
+
   long countByVideoIdAndStatusIn(UUID videoId, Collection<RenditionStatus> statuses);
 }

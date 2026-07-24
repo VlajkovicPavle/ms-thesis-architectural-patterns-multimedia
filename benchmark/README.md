@@ -51,6 +51,8 @@ Use `BENCHMARK_REPLACEMENT_FOR_RUN_ID=<invalid-run-id>` when a row replaces an i
 
 Gatling emits `gatling-timestamps.json` from its `before()` and `after()` lifecycle hooks. These timestamps delimit scenario injection through the last scenario completion and exclude Maven startup, dependency work, and report generation. They are authoritative measurement boundaries in DuckDB and summaries.
 
+Auto-managed runs wait 30 seconds after target readiness before injection by default. This gives cAdvisor's 30-second CPU rate window enough history for every SUT container, including a gateway that starts after its upstream services. Override `BENCHMARK_WARM_UP_SECONDS` only when the protocol explicitly requires another value.
+
 Maven runs in the background. As soon as Gatling emits the end timestamp, the runner starts drain reconciliation while report generation may continue. Drain boundaries remain separate in `timestamps.json`.
 
 During the configured drain period, `reconcile-business-outcomes.py` polls final video rendition status for unresolved records. At drain end it atomically rewrites the exhaustive JSONL so a late terminal result becomes `FINISHED` or `ERROR`; technically observable nonterminal work becomes `NO_TERMINAL_STATUS`; inaccessible final status becomes `TECHNICAL_STATUS_LOST`.
@@ -87,6 +89,8 @@ Prometheus exports retain per-service labels and use `query_range` from authorit
 - per-service sample counts and all raw query availability.
 
 Incomplete app-up, SUT CPU, or SUT working-memory samples make `technical_valid=false` without deleting or rewriting business outcomes beyond normal drain reconciliation.
+
+The frozen HTTP count/sum, pipeline count/sum/histogram, queue-size, and active-job queries are also required with complete measurement-timestamp coverage. A run is technically invalid when any of these business metric series is absent or incomplete, even when transport and rendition outcomes succeed. Across variants, active jobs mean queued plus executing rendition work; queue size counts only pending work.
 
 Grafana dashboards remain generic across variant, service, Compose project, and Compose service.
 
