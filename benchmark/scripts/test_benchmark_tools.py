@@ -73,6 +73,30 @@ class OutcomeTests(unittest.TestCase):
 
 
 class MonitoringTests(unittest.TestCase):
+    def test_query_availability_requires_measurement_timestamp_coverage(self):
+        metrics = load_script("summarize-prometheus.py")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "business-active-jobs.json"
+            path.write_text(
+                json.dumps(
+                    {
+                        "status": "success",
+                        "data": {
+                            "resultType": "matrix",
+                            "result": [
+                                {"metric": {}, "values": [[5, "0"], [10, "1"], [20, "0"]]},
+                                {"metric": {}, "values": [[10, "2"], [15, "1"]]},
+                            ],
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            availability = metrics.query_availability(Path(directory), 10, 15)
+
+            self.assertEqual(2, availability["business-active-jobs"]["measurementSampleCount"])
+
     def test_aligned_aggregate_accepts_prometheus_millisecond_boundary(self):
         metrics = load_script("summarize-prometheus.py")
         started_at = metrics.epoch("2026-07-18T13:53:58.314301282Z")

@@ -42,7 +42,7 @@ def docker_command(recipe: dict) -> list[str]:
         "--user",
         f"{os.getuid()}:{os.getgid()}",
         "--volume",
-        f"{output_path.parent}:/work",
+        f"{output_path.parent}:/work:z",
         recipe["containerImage"],
         *recipe["ffmpegArguments"],
     ]
@@ -56,7 +56,7 @@ def probe(path: Path, image: str) -> dict:
         "--entrypoint",
         "ffprobe",
         "--volume",
-        f"{path.parent}:/work:ro",
+        f"{path.parent}:/work:ro,z",
         image,
         "-v",
         "error",

@@ -7,6 +7,15 @@ from pathlib import Path
 
 
 MILLISECONDS_PER_SECOND = 1000
+REQUIRED_BUSINESS_QUERIES = (
+    "business-http-count",
+    "business-http-sum",
+    "business-pipeline-count",
+    "business-pipeline-sum",
+    "business-pipeline-bucket",
+    "business-queue-size",
+    "business-active-jobs",
+)
 
 
 def epoch(timestamp: str) -> float:
@@ -74,15 +83,22 @@ def aligned_aggregate(
     }
 
 
-def query_availability(prometheus_dir: Path) -> dict:
+def query_availability(prometheus_dir: Path, started_at: float, ended_at: float) -> dict:
     availability = {}
     for path in sorted(prometheus_dir.glob("*.json")):
         payload, series = load_matrix(path)
+        measurement_timestamps = {
+            float(timestamp)
+            for item in series
+            for timestamp, _ in item.get("values", [])
+            if started_at <= float(timestamp) <= ended_at
+        }
         availability[path.stem] = {
             "available": bool(series),
             "status": payload.get("status", "unknown"),
             "seriesCount": len(series),
             "sampleCount": sum(len(item.get("values", [])) for item in series),
+            "measurementSampleCount": len(measurement_timestamps),
         }
     return availability
 
@@ -119,6 +135,12 @@ def main() -> int:
 
     cpu_values = cpu.pop("values")
     memory_values = memory.pop("values")
+    queries = query_availability(args.prometheus_dir, started_at, ended_at)
+    incomplete_business_queries = [
+        name
+        for name in REQUIRED_BUSINESS_QUERIES
+        if queries.get(name, {}).get("measurementSampleCount") != expected_samples
+    ]
     cpu.update(
         {
             "meanCores": sum(cpu_values) / len(cpu_values) if cpu_values else None,
@@ -135,6 +157,7 @@ def main() -> int:
         cpu["availableSampleCount"] == cpu["expectedSampleCount"]
         and memory["availableSampleCount"] == memory["expectedSampleCount"]
         and available_up_samples == expected_up_samples
+        and not incomplete_business_queries
     )
     summary = {
         "schemaVersion": 1,
@@ -149,7 +172,12 @@ def main() -> int:
         },
         "sutCpu": cpu,
         "sutWorkingMemory": memory,
-        "queries": query_availability(args.prometheus_dir),
+        "requiredBusinessMetrics": {
+            "expectedQueries": list(REQUIRED_BUSINESS_QUERIES),
+            "expectedSampleCount": expected_samples,
+            "incompleteQueries": incomplete_business_queries,
+        },
+        "queries": queries,
     }
     args.output.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(

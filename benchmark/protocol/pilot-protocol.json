@@ -29,13 +29,12 @@
   "rampSeconds": 60,
   "pollAttempts": 180,
   "pollPauseMillis": 1000,
-  "warmUpSeconds": 0,
+  "warmUpSeconds": 30,
   "drainSeconds": 30,
   "prometheusStepSeconds": 5,
   "downloadRendition": false,
   "unresolvedOfficialDecisions": [
     "repetitions",
-    "warmUpSeconds",
     "drainSeconds",
     "loadUsers",
     "rampSeconds"

@@ -21,6 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -61,11 +62,16 @@ public class SmokeSimulation extends Simulation {
   private final ScenarioBuilder smoke =
       scenario("upload-rendition-poll-smoke")
           .exec(
+              session ->
+                  session.set(
+                      "uploadFileName",
+                      UUID.randomUUID() + "-" + Path.of(VIDEO_FILE).getFileName()))
+          .exec(
               http("upload video")
                   .post("/api/v1/video")
                   .bodyPart(
                       RawFileBodyPart("file", VIDEO_FILE)
-                          .fileName(Path.of(VIDEO_FILE).getFileName().toString())
+                          .fileName("#{uploadFileName}")
                           .contentType("video/mp4"))
                   .asMultipartForm()
                   .check(status().is(201), io.gatling.javaapi.core.CoreDsl.jsonPath("$.id").saveAs("videoId")))
@@ -75,6 +81,7 @@ public class SmokeSimulation extends Simulation {
                   .header("Content-Type", "application/json")
                   .body(StringBody(this::renditionRequestBody))
                   .check(status().in(200, 202)))
+          .exec(session -> session.set("renditionsFinished", false))
           .repeat(POLL_ATTEMPTS, "pollAttempt")
           .on(
               doIf(session -> !Boolean.TRUE.equals(session.getBoolean("renditionsFinished")))

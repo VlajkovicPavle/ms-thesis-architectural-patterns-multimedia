@@ -43,7 +43,7 @@ The gateway listens at `http://localhost:8080` by default. RabbitMQ management l
 - `http://transcoder-service:8080/actuator/{health,prometheus}`
 - `http://notification-service:8080/api/actuator/{health,prometheus}`
 
-All business metrics have stable tags `variant=microservices` and `service=media-service|transcoder-service|notification-service`. Container metrics should use Compose project `media-microservices` and service labels.
+All business metrics have stable tags `variant=microservices` and `service=media-service|transcoder-service|notification-service`. `media-service` exposes `rendition_queue_size` from persisted `PENDING` renditions and `rendition_active_jobs` from persisted `PENDING` plus `RUNNING` renditions; `transcoder-service` owns `rendition_pipeline_duration_seconds`. Container metrics should use Compose project `media-microservices` and service labels.
 
 ## Resource Boundary
 
